@@ -1,0 +1,7 @@
+node_modules/
+.env
+.env.*
+backend/data/app.db
+ai-core/data/index.faiss
+ai-core/data/meta.json
+frontend/dist/

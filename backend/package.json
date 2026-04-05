@@ -1,0 +1,19 @@
+{
+  "name": "hotel-chat-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Node backend for hotel chat bot",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "node src/index.js",
+    "seed": "node src/seed.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "node-fetch": "^3.3.2",
+    "sql.js": "^1.10.2",
+    "uuid": "^9.0.1"
+  }
+}
