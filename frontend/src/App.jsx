@@ -1,29 +1,108 @@
 import { useEffect, useState } from "react";
 
-const WELCOME = {
-  en: "Hi! Ask me about rooms, policies, or amenities.",
-  my: "မင်္ဂလာပါ! အခန်းတွေ၊ မူဝါဒတွေ၊ ဝန်ဆောင်မှုများအကြောင်း မေးနိုင်ပါတယ်။"
+const UI_TEXT = {
+  en: {
+    welcome: "Hi! Ask me about rooms, policies, or amenities.",
+    thinking: "Thinking...",
+    placeholder: "Type your question...",
+    error: "Sorry, I could not respond just now."
+  }
 };
 
+const BURMESE_CHAR_REGEX = /[က-႟]/;
+
+function detectLanguage(value) {
+  return BURMESE_CHAR_REGEX.test(value || "") ? "my" : "en";
+}
 
 function App() {
-  const [messages, setMessages] = useState([{ role: "assistant", content: WELCOME.en }]);
+  const [uiText, setUiText] = useState(UI_TEXT.en);
+  const [messages, setMessages] = useState([{ role: "assistant", content: UI_TEXT.en.welcome }]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [language, setLanguage] = useState("en");
+  const [uiLanguage, setUiLanguage] = useState("my");
   const [sessionId, setSessionId] = useState(() => localStorage.getItem("sessionId") || "");
 
   useEffect(() => {
-    setMessages([{ role: "assistant", content: WELCOME[language] }]);
-  }, [language]);
+    document.documentElement.lang = uiLanguage === "my" ? "my" : "en";
+    document.body.classList.toggle("lang-my", uiLanguage === "my");
+  }, [uiLanguage]);
 
   useEffect(() => {
-    document.documentElement.lang = language === "my" ? "my" : "en";
-    document.body.classList.toggle("lang-my", language === "my");
-  }, [language]);
+    if (!input.trim()) return;
+    const detected = detectLanguage(input);
+    if (detected !== uiLanguage) {
+      setUiLanguage(detected);
+    }
+  }, [input, uiLanguage]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadUiText() {
+      if (uiLanguage !== "my") {
+        setUiText(UI_TEXT.en);
+        setMessages((prev) => {
+          if (prev.length === 1 && prev[0].role === "assistant") {
+            return [{ role: "assistant", content: UI_TEXT.en.welcome }];
+          }
+          return prev;
+        });
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/translate-ui", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            targetLang: "my",
+            texts: [
+              UI_TEXT.en.welcome,
+              UI_TEXT.en.thinking,
+              UI_TEXT.en.placeholder,
+              UI_TEXT.en.error
+            ]
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Request failed");
+        }
+        if (!Array.isArray(data.texts) || data.texts.length !== 4) {
+          throw new Error("Invalid translation response");
+        }
+
+        if (cancelled) return;
+        const translated = {
+          welcome: data.texts[0],
+          thinking: data.texts[1],
+          placeholder: data.texts[2],
+          error: data.texts[3]
+        };
+        setUiText(translated);
+        setMessages((prev) => {
+          if (prev.length === 1 && prev[0].role === "assistant") {
+            return [{ role: "assistant", content: translated.welcome }];
+          }
+          return prev;
+        });
+      } catch (err) {
+        if (!cancelled) {
+          setUiText(UI_TEXT.en);
+        }
+      }
+    }
+
+    loadUiText();
+    return () => {
+      cancelled = true;
+    };
+  }, [uiLanguage]);
 
   async function sendMessage() {
     const text = input.trim();
+    const messageLang = detectLanguage(text);
     if (!text || loading) return;
 
     setLoading(true);
@@ -34,7 +113,7 @@ function App() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, sessionId, language })
+        body: JSON.stringify({ message: text, sessionId, language: messageLang })
       });
       const data = await res.json();
 
@@ -53,10 +132,7 @@ function App() {
         ...prev,
         {
           role: "assistant",
-          content: language === "my"
-              ? "ယခုအချိန်တွင် ပြန်ကြားမပေးနိုင်ပါ။"
-              : "Sorry, I could not respond just now."
-
+          content: messageLang === "my" ? uiText.error : UI_TEXT.en.error
         }
       ]);
     } finally {
@@ -78,20 +154,6 @@ function App() {
           <h1>Hotel Chat Assistant</h1>
           <p>Hybrid LLM routing with retrieval</p>
         </div>
-        <div className="toggle">
-          <button
-            className={language === "en" ? "active" : ""}
-            onClick={() => setLanguage("en")}
-          >
-            English
-          </button>
-          <button
-            className={language === "my" ? "active" : ""}
-            onClick={() => setLanguage("my")}
-          >
-            Burmese
-          </button>
-        </div>
       </header>
 
       <main className="chat">
@@ -100,7 +162,11 @@ function App() {
             {msg.content}
           </div>
         ))}
-        {loading && <div className="bubble assistant">Thinking...</div>}
+        {loading && (
+          <div className="bubble assistant">
+            {uiLanguage === "my" ? uiText.thinking : UI_TEXT.en.thinking}
+          </div>
+        )}
       </main>
 
       <footer className="composer">
@@ -108,7 +174,7 @@ function App() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={language === "my" ? "မေးခွန်းရေးပါ..." : "Type your question..."}
+          placeholder={uiLanguage === "my" ? uiText.placeholder : UI_TEXT.en.placeholder}
           rows={2}
         />
         <button onClick={sendMessage} disabled={loading}>

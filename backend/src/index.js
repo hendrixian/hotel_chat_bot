@@ -27,6 +27,17 @@ const { buildPrompt } = require("./prompt");
 const BURMESE_UNAVAILABLE = "\u1005\u1014\u1005\u103a\u1000\u102d\u102f \u101a\u102c\u101a\u102e\u1021\u101e\u102f\u1036\u1038\u1019\u1015\u103c\u102f\u1014\u102d\u102f\u1004\u103a\u1015\u102b\u104b \u1001\u100f\u1014\u1031\u102c\u1000\u103a\u1019\u103e \u1015\u103c\u1014\u103a\u101c\u100a\u103a\u1000\u103c\u102d\u102f\u1038\u1005\u102c\u1038\u1015\u102b\u104b";
 const NLLB_SRC_MY = process.env.NLLB_SRC_MY || "mya_Mymr";
 const NLLB_TGT_EN = process.env.NLLB_TGT_EN || "eng_Latn";
+const BURMESE_CHAR_REGEX = /[\u1000-\u109F]/;
+const LATIN_CHAR_REGEX = /[A-Za-z]/;
+
+function hasLatin(text) {
+  return LATIN_CHAR_REGEX.test(text || "");
+}
+
+function hasBurmese(text) {
+  return BURMESE_CHAR_REGEX.test(text || "");
+}
+
 
 function normalizeIntentLabel(label) {
   const normalized = (label || "").toLowerCase();
@@ -47,6 +58,11 @@ function normalizeIntentLabel(label) {
   }
   return "complex";
 }
+function detectLanguage(text) {
+  if (!text) return "en";
+  return BURMESE_CHAR_REGEX.test(text) ? "my" : "en";
+}
+
 
 async function safeTranslate(text, sourceLang, targetLang) {
   if (!text) return text;
@@ -93,6 +109,25 @@ async function startServer() {
     res.json({ status: "ok" });
   });
 
+  app.post("/api/translate-ui", async (req, res) => {
+    const texts = Array.isArray(req.body?.texts) ? req.body.texts : null;
+    if (!texts || texts.length === 0) {
+      return res.status(400).json({ error: "texts is required" });
+    }
+
+    const targetLang = req.body?.targetLang === "my" ? "my" : "en";
+    if (targetLang !== "my") {
+      return res.json({ texts });
+    }
+
+    const translated = [];
+    for (const text of texts) {
+      translated.push(await safeTranslate(String(text || ""), NLLB_TGT_EN, NLLB_SRC_MY));
+    }
+
+    res.json({ texts: translated });
+  });
+
   app.post("/api/chat", async (req, res) => {
     const message = (req.body.message || "").trim();
     if (!message) {
@@ -100,7 +135,9 @@ async function startServer() {
     }
 
     const sessionId = req.body.sessionId || uuidv4();
-    const language = req.body.language === "my" ? "my" : "en";
+    const language = req.body.language === "my" || req.body.language === "en"
+      ? req.body.language
+      : detectLanguage(message);
 
     const history = getRecentMessages(sessionId, 6);
     const intent = await resolveIntent(message, language);
@@ -143,6 +180,9 @@ async function startServer() {
         const translated = await safeTranslate(replyText, NLLB_TGT_EN, NLLB_SRC_MY);
         try {
           replyText = await callBurmeseAIRewrite({ text: translated });
+          if (!hasBurmese(replyText) || hasLatin(replyText)) {
+            replyText = translated;
+          }
         } catch (err) {
           replyText = translated;
         }
