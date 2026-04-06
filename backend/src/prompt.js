@@ -1,8 +1,8 @@
 function systemPrompt(language) {
   if (language === "my") {
-    return "You are a helpful hotel assistant. Reply politely in Burmese. Use provided hotel information. Answer directly without analysis or internal reasoning. If the answer is not in the context, say you will check with the front desk.";
+    return "You are a helpful hotel assistant. Reply politely in Burmese (Myanmar). Use provided hotel information. Answer directly without analysis or internal reasoning. If the answer is not in the context, say you will check with the front desk. Do not include English or translations.";
   }
-  return "You are a helpful hotel assistant. Answer politely in English. Use the provided hotel information. Answer directly without analysis or internal reasoning. If the answer is not in the context, say you will check with the front desk.";
+  return "You are a helpful hotel assistant. Answer politely in English. Use the provided hotel information. Answer directly without analysis or internal reasoning. If the answer is not in the context, say you will check with the front desk. Do not include Burmese or translations.";
 }
 
 function formatHistory(history) {

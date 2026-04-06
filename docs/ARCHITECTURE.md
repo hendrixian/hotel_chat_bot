@@ -10,7 +10,7 @@ This document describes how the hotel chatbot is structured and how a message fl
 
 - Backend (Node/Express)
   - Entry: `backend/src/index.js`
-  - Responsibilities: language routing, retrieval, LLM calls, translation, and response assembly.
+  - Responsibilities: language routing, retrieval, LLM calls, and response assembly.
 
 - Retrieval Service (Python/FastAPI + FAISS)
   - Entry: `ai-core/app.py`
@@ -28,7 +28,7 @@ This document describes how the hotel chatbot is structured and how a message fl
 ## Request Flow (English)
 
 1. Frontend sends `POST /api/chat` with `message` and `sessionId`.
-2. Backend detects language (English vs Burmese) if not provided.
+2. Backend detects language (English vs Burmese).
 3. Backend pulls recent history from SQLite.
 4. Backend retrieves context:
    - Primary: `ai-core` `/retrieve`
@@ -39,13 +39,11 @@ This document describes how the hotel chatbot is structured and how a message fl
 
 ## Request Flow (Burmese)
 
-1. Frontend detects Burmese characters and sends `language: "my"`.
-2. Backend translates the user message (and history) from Burmese to English via Colab `/translate`.
-3. Retrieval runs on the translated English query.
-4. Backend builds a prompt and calls Colab `/generate` (or Ollama).
-5. Backend translates the reply back to Burmese via Colab `/translate`.
-6. Optional rewrite step via Colab `/rewrite`.
-7. Guard: if rewrite output contains Latin letters, backend falls back to the translated Burmese.
+1. Frontend sends `POST /api/chat` with the user message.
+2. Backend detects Burmese input and keeps the message/history in Burmese.
+3. Retrieval runs on the original message.
+4. Backend builds a prompt with Burmese system instructions and calls Colab `/generate` (or Ollama).
+5. Reply is returned to the frontend in Burmese.
 
 ## UI Translation
 

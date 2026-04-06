@@ -12,7 +12,7 @@ const express = require("express");
 const cors = require("cors");
 const { v4: uuidv4 } = require("uuid");
 
-const { initDb, seedIfEmpty, logMessage, getRecentMessages } = require("./db");
+const { initDb, seedIfEmpty, logMessage, getRecentMessages, listFacts, listRooms } = require("./db");
 const { classifyIntent } = require("./router");
 const { retrieveContext } = require("./retrieval");
 const {
@@ -90,8 +90,7 @@ async function resolveIntent(message, language) {
 
   try {
     const rawIntent = await callColabIntent({ text: message });
-    const intentEn = await safeTranslate(rawIntent, NLLB_SRC_MY, NLLB_TGT_EN);
-    return normalizeIntentLabel(intentEn);
+    return normalizeIntentLabel(rawIntent);
   } catch (err) {
     return "complex";
   }
@@ -107,6 +106,13 @@ async function startServer() {
 
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
+  });
+
+  app.get("/api/kb", (req, res) => {
+    res.json({
+      facts: listFacts(),
+      rooms: listRooms()
+    });
   });
 
   app.post("/api/translate-ui", async (req, res) => {
@@ -135,27 +141,17 @@ async function startServer() {
     }
 
     const sessionId = req.body.sessionId || uuidv4();
-    const language = req.body.language === "my" || req.body.language === "en"
-      ? req.body.language
-      : detectLanguage(message);
+    const language = detectLanguage(message);
 
     const history = getRecentMessages(sessionId, 6);
     const intent = await resolveIntent(message, language);
 
-    let workingMessage = message;
-    let workingHistory = history;
-
-    if (language === "my") {
-      workingMessage = await safeTranslate(message, NLLB_SRC_MY, NLLB_TGT_EN);
-      workingHistory = await translateHistory(history, NLLB_SRC_MY, NLLB_TGT_EN);
-    }
-
-    const contextDocs = await retrieveContext(workingMessage, 5);
+    const contextDocs = await retrieveContext(message, 5);
     const prompt = buildPrompt({
-      message: workingMessage,
+      message,
       contextDocs,
-      history: workingHistory,
-      language: "en"
+      history,
+      language
     });
 
     let replyText = "";
@@ -176,17 +172,6 @@ async function startServer() {
         }
       }
 
-      if (language === "my") {
-        const translated = await safeTranslate(replyText, NLLB_TGT_EN, NLLB_SRC_MY);
-        try {
-          replyText = await callBurmeseAIRewrite({ text: translated });
-          if (!hasBurmese(replyText) || hasLatin(replyText)) {
-            replyText = translated;
-          }
-        } catch (err) {
-          replyText = translated;
-        }
-      }
     } catch (err) {
       debug("Chat failed", err && err.message ? err.message : err);
       replyText = language === "my"

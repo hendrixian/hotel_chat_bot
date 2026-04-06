@@ -183,6 +183,11 @@ function searchFactsLike(query, limit = 5) {
   );
 }
 
+
+function listFacts() {
+  return all("SELECT category, title, content, tags FROM facts ORDER BY id ASC");
+}
+
 function listRooms() {
   return all("SELECT name, capacity, price_per_night, features FROM rooms");
 }
@@ -193,5 +198,6 @@ module.exports = {
   logMessage,
   getRecentMessages,
   searchFactsLike,
+  listFacts,
   listRooms
 };
