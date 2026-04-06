@@ -1,0 +1,236 @@
+{
+  "hotel_identity": {
+    "name": {"en": "Golden Lotus Hotel Yangon", "my": "Golden Lotus Hotel Yangon"},
+    "brand": {"en": "Golden Lotus Group", "my": "Golden Lotus Groupစု"},
+    "address": {
+      "en": "No. 123, Pyay Road, Sanchaung Township, Yangon, Myanmar",
+      "my": "အမှတ် ၁၂၃၊ ပြည်လမ်း၊ စမ်းချောင်မြို့နယ်၊ ရန်ကုန်၊ မြန်မာ"
+    },
+    "geo": {
+      "latitude": 16.7983,
+      "longitude": 96.1445
+    },
+    "contact": {
+      "phone": "+95-1-2345678",
+      "email": "info@goldenlotusyangon.com",
+      "website": "www.goldenlotusyangon.com"
+    },
+    "description": {
+      "en": "A modern 4-star hotel located in central Yangon offering luxury accommodation, dining, and business facilities.",
+      "my": "ရန်ကုန်မြို့လယ်တွင် တည်ရှိသော ခေတ်မီ ကြယ် ၄ ဆိုင်ရာ ဟိုတယ်တစ်ခုဖြစ်ပြီး အဆင့်မြင့် တည်းခိုခန်းများ၊ စားသောက်ရေးနှင့် စီးပွားရေးဝန်ဆောင်မှုများကို ပံ့ပိုးပေးသည်။"
+    },
+    "rating": 4.3,
+    "stars": 4,
+    "year_built": 2015,
+    "last_renovated": 2022,
+    "languages_spoken": [
+      {"en": "English", "my": "အင်္ဂလိပ်"},
+      {"en": "Burmese", "my": "မြန်မာ"},
+      {"en": "Chinese", "my": "တရုတ်"}
+    ],
+    "nearby_landmarks": [
+      {"en": "Shwedagon Pagoda", "my": "ရွှေတိဂုံဘုရား"},
+      {"en": "Junction Square", "my": "ဂျန်ရှင် စကွဲ"}
+    ]
+  },
+  "rooms": [
+    {
+      "id": 1,
+      "type": {"en": "Standard Room", "my": "Standard Room"},
+      "bed": {"en": "Queen Bed", "my": "Queen-size ကုတင်"},
+      "capacity": 2,
+      "size_sqm": 25,
+      "view": {"en": "City", "my": "မြို့မြင်ကွင်း"},
+      "floor_options": [2, 3, 4],
+      "smoking": false,
+      "accessible": false,
+      "total_rooms": 40,
+      "available_rooms": 12,
+      "amenities": [
+        {"en": "Free WiFi", "my": "အခမဲ့ WiFi"},
+        {"en": "Air Conditioning", "my": "လေအေးပေးစနစ်"},
+        {"en": "TV", "my": "တီဗီ"},
+        {"en": "Mini Bar", "my": "မီနီဘား"}
+      ],
+      "pricing": {
+        "base_price_usd": 45,
+        "weekend_price_usd": 50,
+        "high_season_price_usd": 60,
+        "tax_percent": 10,
+        "service_charge_percent": 5
+      }
+    },
+    {
+      "id": 2,
+      "type": {"en": "Deluxe Room", "my": "Deluxe Room"},
+      "bed": {"en": "King Bed", "my": "King-size ကုတင်"},
+      "capacity": 2,
+      "size_sqm": 35,
+      "view": {"en": "City / Pagoda", "my": "မြို့/ဘုရားမြင်ကွင်း"},
+      "floor_options": [5, 6, 7],
+      "smoking": false,
+      "accessible": true,
+      "total_rooms": 30,
+      "available_rooms": 8,
+      "amenities": [
+        {"en": "Free WiFi", "my": "အခမဲ့ WiFi"},
+        {"en": "Smart TV", "my": "စမတ်တီဗီ"},
+        {"en": "Mini Bar", "my": "မီနီဘား"},
+        {"en": "Bathtub", "my": "ရေစိမ်ကန်"}
+      ],
+      "pricing": {
+        "base_price_usd": 65,
+        "weekend_price_usd": 75,
+        "high_season_price_usd": 85,
+        "tax_percent": 10,
+        "service_charge_percent": 5
+      }
+    }
+  ],
+  "facilities": [
+    {
+      "name": {"en": "Swimming Pool", "my": "Swimming Pool"},
+      "hours": "06:00 - 22:00",
+      "location": {"en": "Rooftop", "my": "ခေါင်းမိုးထပ်"},
+      "access": {"en": "Free for guests", "my": "တည်းခိုဧည့်သည်များအတွက် အခမဲ့"}
+    },
+    {
+      "name": {"en": "Fitness Center", "my": "Fitness Center"},
+      "hours": "24 hours",
+      "location": {"en": "Level 2", "my": "ဒုတိယထပ်"},
+      "access": {"en": "Free for guests", "my": "တည်းခိုဧည့်သည်များအတွက် အခမဲ့"}
+    },
+    {
+      "name": {"en": "Spa & Wellness", "my": "Spa & Wellness"},
+      "hours": "10:00 - 20:00",
+      "location": {"en": "Level 3", "my": "တတိယထပ်"},
+      "access": {"en": "Paid service", "my": "ဝန်ဆောင်ခပေးရမည်"}
+    }
+  ],
+  "dining": [
+    {
+      "name": {"en": "Lotus Restaurant", "my": "Lotus Restaurant"},
+      "cuisine": {"en": "International & Burmese", "my": "အပြည်ပြည်ဆိုင်ရာ နှင့် မြန်မာ"},
+      "hours": "06:00 - 22:00",
+      "type": {"en": "Buffet & A La Carte", "my": "ဘူဖေး နှင့် အလားကတ်"},
+      "breakfast_included": true
+    },
+    {
+      "name": {"en": "Sky Bar", "my": "Sky Bar"},
+      "cuisine": {"en": "Drinks & Light Snacks", "my": "အရက်/အချိုရည် နှင့် အဆာပြေ အစားအစာ"},
+      "hours": "17:00 - 00:00",
+      "type": {"en": "Bar", "my": "ဘား"},
+      "breakfast_included": false
+    }
+  ],
+  "policies": {
+    "check_in": "14:00",
+    "check_out": "12:00",
+    "early_check_in": {
+      "en": "Subject to availability, charges may apply",
+      "my": "ရရှိနိုင်မှုအပေါ် မူတည်၍ အခကြေးငွေရှိနိုင်သည်"
+    },
+    "late_check_out": {
+      "en": "Charges apply after 12:00",
+      "my": "၁၂:၀၀ နောက်ပိုင်း အခကြေးငွေကောက်ခံမည်"
+    },
+    "cancellation": {
+      "free_until_hours": 24,
+      "late_cancellation_fee": {"en": "1 night charge", "my": "တစ်ညခ အခကြေးငွေ"}
+    },
+    "payment": {
+      "methods": [
+        {"en": "Cash", "my": "ငွေသား"},
+        {"en": "Visa", "my": "ဗီဇာ"},
+        {"en": "MasterCard", "my": "မာစတာကတ်"}
+      ],
+      "deposit_required": false
+    },
+    "children": {"en": "Children under 6 stay free", "my": "အသက် ၆ နှစ်အောက်ကလေးများ အခမဲ့"},
+    "extra_bed_usd": 15,
+    "pets": {"en": "Not allowed", "my": "မရ"},
+    "smoking": {"en": "Allowed only in designated areas", "my": "သတ်မှတ်ထားသော နေရာများတွင်သာ ခွင့်ပြုသည်"},
+    "id_requirement": {"en": "Valid passport or NRC required", "my": "တရားဝင် ပတ်စပို့ သို့မဟုတ် NRC လိုအပ်သည်"}
+  },
+  "event_venues": [
+    {
+      "name": {"en": "Lotus Ballroom", "my": "Lotus Ballroom"},
+      "capacity": 200,
+      "type": {"en": "Wedding / Conference", "my": "မင်္ဂလာ/ဆွေးနွေးပွဲ"},
+      "layouts": [
+        {"en": "Theater", "my": "ရုပ်ရှင်ခန်းမ"},
+        {"en": "Banquet", "my": "ဘန်ကက်"},
+        {"en": "Classroom", "my": "သင်တန်းခန်း"}
+      ],
+      "equipment": [
+        {"en": "Projector", "my": "ပရိုဂျက်တာ"},
+        {"en": "Sound System", "my": "အသံစနစ်"},
+        {"en": "Stage", "my": "စတေ့ဂျ်စင်"}
+      ],
+      "catering_available": true,
+      "pricing": {
+        "full_day_usd": 500,
+        "half_day_usd": 300
+      }
+    },
+    {
+      "name": {"en": "Jasmine Meeting Room", "my": "Jasmine Meeting Room"},
+      "capacity": 40,
+      "type": {"en": "Business Meeting", "my": "စီးပွားရေးဆွေးနွေးပွဲ"},
+      "layouts": [
+        {"en": "Boardroom", "my": "အစည်းအဝေးခန်း"}
+      ],
+      "equipment": [
+        {"en": "TV Screen", "my": "တီဗီစခရင်"},
+        {"en": "Whiteboard", "my": "ဝှိက်ဘုတ်"}
+      ],
+      "catering_available": false,
+      "pricing": {
+        "hourly_usd": 30
+      }
+    }
+  ],
+  "transportation": {
+    "airport_shuttle": {
+      "available": true,
+      "price_usd": 20,
+      "schedule": {"en": "On request", "my": "တောင်းဆိုမှသာ"}
+    },
+    "parking": {
+      "type": {"en": "Private", "my": "ကိုယ်ပိုင်"},
+      "price": {"en": "Free", "my": "အခမဲ့"}
+    },
+    "car_rental": true,
+    "nearby_transport": [
+      {"en": "Bus Stop", "my": "ဘတ်စ်မှတ်တိုင်"},
+      {"en": "Taxi Gate", "my": "တက္ကစီဂိတ်"}
+    ]
+  },
+  "digital_services": {
+    "wifi": {
+      "available": true,
+      "free": true,
+      "speed": {"en": "High-speed", "my": "မြန်နှုန်းမြင့်"}
+    },
+    "mobile_check_in": false,
+    "contact_channels": [
+      {"en": "Phone", "my": "ဖုန်း"},
+      {"en": "Email", "my": "အီးမေးလ်"}
+    ]
+  },
+  "reviews": {
+    "average_rating": 4.3,
+    "total_reviews": 1243,
+    "categories": {
+      "cleanliness": 4.5,
+      "service": 4.4,
+      "location": 4.2,
+      "value": 4.1
+    },
+    "sample_reviews": [
+      {"en": "Great location and friendly staff.", "my": "တည်နေရာကောင်းပြီး ဝန်ထမ်းများရင်းနှီးဖော်ရွေသည်။"},
+      {"en": "Clean rooms and good breakfast.", "my": "အခန်းသန့်ရှင်းပြီး မနက်စာကောင်းသည်။"},
+      {"en": "Nice rooftop pool with city view.", "my": "မြို့မြင်ကွင်းပါ အပေါ်ထပ် ရေကူးကန်ကောင်းသည်။"}
+    ]
+  }
+}

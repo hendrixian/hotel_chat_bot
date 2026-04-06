@@ -151,3 +151,172 @@ button:disabled {
     max-width: 100%;
   }
 }
+
+
+.kb {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.kb-header h1 {
+  font-family: "IBM Plex Serif", serif;
+  font-size: 30px;
+  margin: 0 0 6px;
+}
+
+.kb-header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.kb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.kb-card {
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  padding: 18px;
+  box-shadow: 0 8px 22px rgba(31, 29, 27, 0.1);
+  border: 1px solid #eadfd2;
+}
+
+.kb-card h2 {
+  margin: 0 0 6px;
+}
+
+.kb-meta {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.kb-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.kb-item {
+  padding: 12px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid #f1e6d9;
+}
+
+.kb-item-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kb-item-body {
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.kb-tags {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.kb-pill {
+  background: var(--accent);
+  color: white;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.kb-error {
+  color: #9b2c2c;
+  background: #fff3f3;
+  border-color: #f1bfbf;
+}
+
+
+.kb-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.kb-badges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.kb-badge {
+  background: var(--accent);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.kb-field {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px dashed #eadfd2;
+  font-size: 14px;
+}
+
+.kb-field span {
+  color: var(--muted);
+}
+
+.kb-field strong {
+  text-align: right;
+  max-width: 60%;
+}
+
+.kb-divider {
+  height: 1px;
+  background: #eadfd2;
+  margin: 14px 0 10px;
+}
+
+.kb-pricing {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kb-identity h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+
+@media (max-width: 720px) {
+  .kb-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .kb-field {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .kb-field strong {
+    max-width: 100%;
+  }
+}

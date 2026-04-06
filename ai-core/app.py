@@ -27,6 +27,7 @@ meta = None
 class RetrieveRequest(BaseModel):
     query: str
     top_k: int = 5
+    language: str | None = None
 
 
 class RetrieveResult(BaseModel):
@@ -73,20 +74,29 @@ def retrieve(req: RetrieveRequest):
         raise HTTPException(status_code=400, detail="query is required")
 
     top_k = max(1, min(req.top_k, 10))
+    lang = (req.language or "").lower()
+    if lang not in ("en", "my"):
+        lang = ""
 
     embedding = model.encode([query], max_length=EMBED_MAX_LENGTH)["dense_vecs"]
     embedding = normalize_embeddings(np.asarray(embedding, dtype=np.float32))
-    scores, indices = index.search(embedding, top_k)
+
+    search_k = min(max(top_k * 5, top_k), len(meta)) if lang else top_k
+    scores, indices = index.search(embedding, search_k)
 
     results = []
     for score, idx in zip(scores[0], indices[0]):
         if idx < 0 or idx >= len(meta):
             continue
         doc = meta[idx]
+        if lang and doc.get("language") != lang:
+            continue
         results.append({
             "text": doc["text"],
             "source": doc.get("source", "unknown"),
             "score": float(score)
         })
+        if len(results) >= top_k:
+            break
 
     return {"results": results}

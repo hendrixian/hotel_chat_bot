@@ -21,7 +21,8 @@ This document describes how the hotel chatbot is structured and how a message fl
   - Optional local fallback: Ollama `/api/generate`
 
 - Data
-  - SQLite: `backend/data/app.db`
+  - Knowledge base JSON: `backend/data/kb.json` (supports `en`/`my` bilingual fields)
+  - SQLite (sessions/messages): `backend/data/app.db`
   - FAISS index: `ai-core/data/index.faiss`
   - FAISS metadata: `ai-core/data/meta.json`
 
@@ -31,8 +32,8 @@ This document describes how the hotel chatbot is structured and how a message fl
 2. Backend detects language (English vs Burmese).
 3. Backend pulls recent history from SQLite.
 4. Backend retrieves context:
-   - Primary: `ai-core` `/retrieve`
-   - Fallback: SQLite keyword search
+   - Primary: `ai-core` `/retrieve` (built from kb.json)
+   - Fallback: keyword match over kb.json
 5. Backend builds a prompt with system instructions and context.
 6. Backend calls Colab `/generate` (or Ollama if configured).
 7. Reply is returned to the frontend.
@@ -64,7 +65,7 @@ AI Core (`ai-core/.env`):
 
 ## Updating Knowledge
 
-1. Update `backend/data/app.db` (facts/rooms).
+1. Update `backend/data/kb.json`.
 2. Rebuild FAISS index:
    - `python build_index.py`
 3. Restart `ai-core` service.

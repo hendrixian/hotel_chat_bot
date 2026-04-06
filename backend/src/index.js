@@ -12,9 +12,10 @@ const express = require("express");
 const cors = require("cors");
 const { v4: uuidv4 } = require("uuid");
 
-const { initDb, seedIfEmpty, logMessage, getRecentMessages, listFacts, listRooms } = require("./db");
+const { initDb, seedIfEmpty, logMessage, getRecentMessages } = require("./db");
 const { classifyIntent } = require("./router");
 const { retrieveContext } = require("./retrieval");
+const { getKb, getKbLocalized } = require("./kb");
 const {
   callColabLLM,
   callColabTranslate,
@@ -109,10 +110,12 @@ async function startServer() {
   });
 
   app.get("/api/kb", (req, res) => {
-    res.json({
-      facts: listFacts(),
-      rooms: listRooms()
-    });
+    const lang = req.query?.lang === "my" ? "my" : req.query?.lang === "en" ? "en" : null;
+    const kb = lang ? getKbLocalized(lang) : getKb();
+    if (!kb) {
+      return res.status(500).json({ error: "Knowledge base not available" });
+    }
+    res.json(kb);
   });
 
   app.post("/api/translate-ui", async (req, res) => {
@@ -146,7 +149,7 @@ async function startServer() {
     const history = getRecentMessages(sessionId, 6);
     const intent = await resolveIntent(message, language);
 
-    const contextDocs = await retrieveContext(message, 5);
+    const contextDocs = await retrieveContext(message, 5, language);
     const prompt = buildPrompt({
       message,
       contextDocs,

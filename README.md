@@ -94,7 +94,8 @@ Open the frontend dev server in your browser and start chatting.
 
 - If the Colab endpoint is down, the backend falls back to Ollama when `OLLAMA_URL` is set.
 - The FAISS service reads from the same SQLite database to build its index.
-- Update hotel facts/rooms in `backend/data/app.db` and then rerun `python build_index.py`.
+- Update hotel data in `backend/data/kb.json` and then rerun `python build_index.py`.
+- `kb.json` supports bilingual fields using `{ "en": ..., "my": ... }`.
 - Set `DEBUG_LLM=1` in `backend/.env` for backend LLM debugging logs.
 
 ## Docs
