@@ -309,6 +309,18 @@ function App() {
           })
         });
         const data = await res.json();
+
+        if (import.meta.env.VITE_DEBUG_CHAT === "1" && data?.debug) {
+          console.group("chat debug");
+          data.debug.forEach((entry) => {
+          if (entry && typeof entry.value === "string") {
+          console.log(`${entry.label}:`, entry.value);
+          } else if (entry) {
+          console.log(entry.label, entry.value);
+        }
+        });
+        console.groupEnd();
+        }
         if (!res.ok) {
           throw new Error(data.error || "Request failed");
         }
@@ -359,6 +371,18 @@ function App() {
         body: JSON.stringify({ message: text, sessionId, language: messageLang })
       });
       const data = await res.json();
+
+        if (import.meta.env.VITE_DEBUG_CHAT === "1" && data?.debug) {
+          console.group("chat debug");
+          data.debug.forEach((entry) => {
+          if (entry && typeof entry.value === "string") {
+          console.log(`${entry.label}:`, entry.value);
+          } else if (entry) {
+          console.log(entry.label, entry.value);
+        }
+        });
+        console.groupEnd();
+      }
 
       if (!res.ok) {
         throw new Error(data.error || "Request failed");
@@ -429,3 +453,5 @@ function App() {
 }
 
 export default App;
+
+
