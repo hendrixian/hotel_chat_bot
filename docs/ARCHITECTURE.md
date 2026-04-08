@@ -30,8 +30,9 @@ Backend (Node/Express)
 - Responsibilities:
   - Accepts chat requests
   - Detects language and intent
+  - Translates Burmese to English for reasoning + retrieval
   - Fetches context from retrieval service (or keyword fallback)
-  - Builds prompts
+  - Builds prompts and performs refinement
   - Calls LLM endpoints (`/generate`, `/translate`, `/intent`, `/rewrite`)
   - Writes conversation history to SQLite
 
@@ -44,10 +45,10 @@ Retrieval Service (FastAPI + FAISS)
 
 LLM Services
 - Colab endpoints:
-  - `/generate`: free-form response generation
-  - `/translate`: NLLB translation used for UI and some history handling
+  - `/generate`: response generation and English refinement
+  - `/translate`: NLLB translation (Burmese <-> English)
   - `/intent`: intent classifier (booking/faq/complex)
-  - `/rewrite`: optional Burmese rewrite polishing
+  - `/rewrite`: Burmese refinement
 - Optional local fallback:
   - Ollama `/api/generate` using `OLLAMA_MODEL`
 
@@ -77,23 +78,30 @@ Data & Storage
 ## Request Flow (English)
 
 1. Frontend sends `POST /api/chat` with `message` and `sessionId`.
-2. Backend detects language (English vs Burmese).
+2. Backend detects English input.
 3. Backend loads recent history from SQLite (up to 6 messages).
 4. Backend retrieves context:
    - Primary: `ai-core` `/retrieve` (vector search)
    - Fallback: keyword match over `kb.json`
-5. Backend builds a prompt with system instructions, context, history, and the user message.
-6. Backend calls Colab `/generate` (or Ollama if Colab fails and `OLLAMA_URL` is set).
+5. Backend calls the LLM for the initial English draft.
+6. Backend runs the English refinement pass (IMPORTANT).
 7. Backend logs both user and assistant messages to SQLite.
 8. Backend returns `{ reply, intent, context }` to the frontend.
 
 ## Request Flow (Burmese)
 
-1. Frontend sends `POST /api/chat` with the user message.
-2. Backend detects Burmese input (Myanmar script).
-3. History and retrieval run in the same language as the user input.
-4. Backend builds a Burmese system prompt and calls `/generate`.
-5. Reply is returned in Burmese.
+1. Frontend sends `POST /api/chat` with the Burmese message.
+2. Backend translates Burmese -> English (for reasoning + RAG).
+3. Backend loads recent history and translates it to English.
+4. Backend retrieves context in English:
+   - Primary: `ai-core` `/retrieve`
+   - Fallback: keyword match over English `kb.json`
+5. Backend calls the LLM for the English draft.
+6. Backend runs the English refinement pass.
+7. Backend translates English -> Burmese.
+8. Backend runs the Burmese refinement model (IMPORTANT).
+9. Backend logs both user and assistant messages to SQLite.
+10. Backend returns the Burmese reply to the frontend.
 
 ## UI Translation
 
@@ -115,6 +123,10 @@ The returned intent is sent back to the frontend but does not currently alter UI
   - If Ollama fails too, backend returns the generic error reply.
 - Colab `/translate` failure:
   - UI translation falls back to English without failing the chat request.
+  - Chat pipeline attempts an LLM-based translation fallback (via `/generate` or Ollama when configured).
+  - If translation still fails (or `LLM_TRANSLATE_FALLBACK=0`), chat pipeline falls back to direct Burmese prompting.
+- Colab `/rewrite` failure:
+  - Burmese reply falls back to the translated Burmese text.
 - `ai-core` not running:
   - Backend uses keyword search over `kb.json`.
 - Timeout:
@@ -128,11 +140,15 @@ Backend (`backend/.env`)
 - `AI_CORE_URL`
 - `FETCH_TIMEOUT_MS`
 - `DEBUG_LLM`
+- `DEBUG_TRACE`
 
 AI Core (`ai-core/.env`)
 - `MODEL_NAME`
 - `HOTEL_DB_PATH`
 - `INDEX_PATH`, `META_PATH`
+
+Frontend (optional)
+- `VITE_DEBUG_CHAT`
 
 ## Updating Knowledge
 

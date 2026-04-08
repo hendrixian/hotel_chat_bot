@@ -93,6 +93,7 @@ Open the frontend dev server in your browser and start chatting.
 ## Notes
 
 - If the Colab endpoint is down, the backend falls back to Ollama when `OLLAMA_URL` is set.
+- If `/translate` is unavailable, chat translation can fall back to the LLM (disable with `LLM_TRANSLATE_FALLBACK=0`).
 - The FAISS service reads from the same SQLite database to build its index.
 - Update hotel data in `backend/data/kb.json` and then rerun `python build_index.py`.
 - `kb.json` supports bilingual fields using `{ "en": ..., "my": ... }`.
