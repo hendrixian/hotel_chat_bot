@@ -1,6 +1,7 @@
 node_modules/
 .env
 .env.*
+!.env.example
 backend/data/app.db
 ai-core/data/index.faiss
 ai-core/data/meta.json
