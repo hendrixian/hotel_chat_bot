@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("./env");
 const { initDb, seedIfEmpty } = require("./db");
 
 (async () => {

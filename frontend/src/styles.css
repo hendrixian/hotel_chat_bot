@@ -320,3 +320,142 @@ button:disabled {
     max-width: 100%;
   }
 }
+
+.admin-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.admin-header h1 {
+  margin: 0 0 6px;
+  font-family: "IBM Plex Serif", serif;
+}
+
+.admin-header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.admin-session {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.admin-alert {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+}
+
+.admin-error {
+  background: #fff2f2;
+  border-color: #efc3c3;
+  color: #8f1f1f;
+}
+
+.admin-notice {
+  background: #f2fff6;
+  border-color: #bee5c9;
+  color: #1f6c34;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.admin-card {
+  background: rgba(255, 255, 255, 0.74);
+  border: 1px solid #eadfd2;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 8px 18px rgba(31, 29, 27, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-card h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-form.compact {
+  gap: 6px;
+}
+
+.admin-form input,
+.admin-form select,
+.admin-form textarea {
+  width: 100%;
+  border: 1px solid #dbcdbf;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #fff;
+}
+
+.admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 340px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.admin-item {
+  border: 1px solid #ede2d6;
+  border-radius: 12px;
+  padding: 8px 10px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.admin-item-sub {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.admin-item-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-item-actions button {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+@media (max-width: 720px) {
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

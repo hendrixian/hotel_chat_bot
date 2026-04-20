@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { listRoomInventory, listEvents, listKbEntries } = require("./db");
 
 const KB_PATH = process.env.KB_PATH || path.join(__dirname, "..", "data", "kb.json");
 
@@ -52,6 +53,57 @@ function formatList(items) {
   if (!items) return "";
   if (Array.isArray(items)) return items.join(", ");
   return String(items);
+}
+
+function parseTags(raw) {
+  return String(raw || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function mergeDynamicData(baseKb) {
+  const kb = baseKb && typeof baseKb === "object" ? { ...baseKb } : {};
+
+  const inventory = listRoomInventory();
+  const events = listEvents();
+  const kbEntries = listKbEntries();
+
+  if (inventory.length > 0) {
+    kb.inventory_calendar = inventory.map((row) => ({
+      id: row.id,
+      room_type: row.room_type,
+      date: row.date,
+      total_rooms: row.total_rooms,
+      available_rooms: row.available_rooms,
+      price_usd: row.price_usd,
+      notes: row.notes || ""
+    }));
+  }
+
+  if (events.length > 0) {
+    kb.events_calendar = events.map((row) => ({
+      id: row.id,
+      title: { en: row.title_en, my: row.title_my },
+      description: { en: row.description_en || "", my: row.description_my || "" },
+      start_date: row.start_date,
+      end_date: row.end_date
+    }));
+  }
+
+  if (kbEntries.length > 0) {
+    kb.admin_kb_entries = kbEntries.map((row) => ({
+      id: row.id,
+      key: row.kb_key,
+      category: row.category,
+      title: { en: row.title_en, my: row.title_my },
+      content: { en: row.content_en, my: row.content_my },
+      tags: parseTags(row.tags),
+      updated_at: row.updated_at
+    }));
+  }
+
+  return kb;
 }
 
 function kbToDocs(kb) {
@@ -134,22 +186,50 @@ function kbToDocs(kb) {
     });
   }
 
+  if (Array.isArray(kb.inventory_calendar)) {
+    kb.inventory_calendar.forEach((row) => {
+      docs.push({
+        text: `Inventory ${row.date}: ${row.room_type} has ${row.available_rooms}/${row.total_rooms} available rooms.${row.price_usd ? ` Price $${row.price_usd}.` : ""}${row.notes ? ` Notes: ${row.notes}.` : ""}`,
+        source: "inventory"
+      });
+    });
+  }
+
+  if (Array.isArray(kb.events_calendar)) {
+    kb.events_calendar.forEach((event) => {
+      docs.push({
+        text: `Event ${event.title} from ${event.start_date} to ${event.end_date}. ${event.description || ""}`.trim(),
+        source: "event"
+      });
+    });
+  }
+
+  if (Array.isArray(kb.admin_kb_entries)) {
+    kb.admin_kb_entries.forEach((entry) => {
+      docs.push({
+        text: `${entry.category}: ${entry.title}. ${entry.content}. Tags: ${formatList(entry.tags)}.`,
+        source: "admin_kb"
+      });
+    });
+  }
+
   return docs;
 }
 
 function getKb() {
-  return loadKb();
+  const base = loadKb();
+  return mergeDynamicData(base);
 }
 
 function getKbLocalized(lang) {
-  const kb = loadKb();
+  const kb = getKb();
   if (!kb) return null;
   if (lang !== "en" && lang !== "my") return kb;
   return localizeValue(kb, lang);
 }
 
 function getKbDocs(language) {
-  const kb = loadKb();
+  const kb = getKb();
   if (!kb) return [];
   const localized = language === "en" || language === "my" ? localizeValue(kb, language) : kb;
   return kbToDocs(localized);

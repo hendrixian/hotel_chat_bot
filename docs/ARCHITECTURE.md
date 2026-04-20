@@ -15,6 +15,12 @@ External LLM services are accessed over HTTP:
 - Colab LLM API via a Cloudflare tunnel
 - Optional local fallback: Ollama on `localhost:11434`
 
+The backend supports either one shared Colab URL (recommended) or split Colab URLs:
+
+- Shared: `COLAB_URL`
+- Split: `COLAB_QWEN_URL` for `/generate`, `/intent`, `/rewrite`
+- Split: `COLAB_MBART_URL` for `/translate`
+
 ## Components
 
 Frontend (React)
@@ -35,6 +41,7 @@ Backend (Node/Express)
   - Builds prompts and performs refinement
   - Calls LLM endpoints (`/generate`, `/translate`, `/intent`, `/rewrite`)
   - Writes conversation history to SQLite
+  - Provides admin CRUD APIs (`/api/admin/*`) for inventory, events, reservations, and KB entries
 
 Retrieval Service (FastAPI + FAISS)
 - Entry: `ai-core/app.py`
@@ -46,7 +53,7 @@ Retrieval Service (FastAPI + FAISS)
 LLM Services
 - Colab endpoints:
   - `/generate`: response generation and English refinement
-  - `/translate`: NLLB translation (Burmese <-> English)
+  - `/translate`: mBART translation (Burmese <-> English)
   - `/intent`: intent classifier (booking/faq/complex)
   - `/rewrite`: Burmese refinement
 - Optional local fallback:
@@ -55,6 +62,12 @@ LLM Services
 Data & Storage
 - Knowledge base JSON: `backend/data/kb.json` (supports `en`/`my` bilingual fields)
 - SQLite (sessions/messages): `backend/data/app.db`
+- Additional SQLite admin tables:
+  - `admin_users`, `admin_sessions`
+  - `room_inventory`
+  - `events`
+  - `reservations`
+  - `kb_entries`
 - FAISS index: `ai-core/data/index.faiss`
 - FAISS metadata: `ai-core/data/meta.json`
 
@@ -74,6 +87,28 @@ Data & Storage
 
 `GET /api/health`
 - Response: `{ status: "ok" }`
+
+`POST /api/admin/login`
+- Body: `{ username, password }`
+- Response: `{ token, expiresAt, user }`
+
+`POST /api/admin/logout`
+- Requires admin token
+
+`GET /api/admin/me`
+- Requires admin token
+
+`GET/POST/PUT/DELETE /api/admin/room-inventory`
+- Manage room availability by date
+
+`GET/POST/PUT/DELETE /api/admin/events`
+- Manage date-ranged events
+
+`GET/POST/PUT/DELETE /api/admin/reservations`
+- Manage reservations
+
+`GET/POST/PUT/DELETE /api/admin/kb-entries`
+- Manage custom bilingual KB entries (single-language edit auto-translates the other language)
 
 ## Request Flow (English)
 
@@ -134,20 +169,21 @@ The returned intent is sent back to the frontend but does not currently alter UI
 
 ## Environment Variables
 
-Backend (`backend/.env`)
+Shared root env (`.env`)
 - `COLAB_URL`, `COLAB_TOKEN`
+- Optional legacy split values:
+  - `COLAB_QWEN_URL`, `COLAB_QWEN_TOKEN`
+  - `COLAB_MBART_URL`, `COLAB_MBART_TOKEN`
+- `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `ADMIN_SESSION_HOURS`
 - `OLLAMA_URL`, `OLLAMA_MODEL`
 - `AI_CORE_URL`
 - `FETCH_TIMEOUT_MS`
 - `DEBUG_LLM`
 - `DEBUG_TRACE`
-
-AI Core (`ai-core/.env`)
 - `MODEL_NAME`
+- `KB_PATH`
 - `HOTEL_DB_PATH`
 - `INDEX_PATH`, `META_PATH`
-
-Frontend (optional)
 - `VITE_DEBUG_CHAT`
 
 ## Updating Knowledge

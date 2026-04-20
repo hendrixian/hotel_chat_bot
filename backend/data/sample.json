@@ -1,0 +1,268 @@
+[
+  {
+    "id": 1,
+    "domain": "booking",
+    "en": "I would like to make a reservation for two nights.",
+    "my": "နှစ်ညအတွက် ကြိုတင်မှာယူချင်ပါတယ်။"
+  },
+  {
+    "id": 2,
+    "domain": "booking",
+    "en": "Do you have any rooms available this weekend?",
+    "my": ["ဒီအပတ်အဆုံးမှာ အခန်းလွတ်ရှိပါသလား။",
+           "စနေ၊တနင်္ဂနွေမှာ အခန်းလွတ်လား",
+           "Sat, sun အခန်းလွတ်ရှိလား",
+           "ရုံးပိတ်ရက်တွေ အခန်းလွတ်လား"]
+  },
+  {
+    "id": 3,
+    "domain": "check_in",
+    "en": "What time is check-in?",
+    "my": ["Check-in အချိန်ဘယ်တော့လဲ။",
+        "ဘယ်တောာ့ အခန်းထဲဝင်လိုရလဲ",
+        "Check inက ဘယ်တော့လဲ","ဘယ်အချိန်ဝင်လိုရလဲ",
+        "ဘယ်အချိန် check in လဲ"]
+  },
+    {
+    "id": 4,
+    "domain": "check_out",
+    "intent": "late_check_out",
+    "en": [
+        "Can I request a late check-out?",
+        "I would like a late check-out.",
+        "Is late check-out available?",
+        "What happens if I check out late?"
+    ],
+    "my": [
+        "နောက်ကျမှ အခန်းက ထွက်လို့ရလား",
+        "Late check-out လုပ်ချင်လို",
+        "နောက်ကျမှ ထွက်ချင်လို",
+        "နောက်ကျမှ ထွက်ရင် ဘာဖြစ်မှာလဲ"
+    ]
+    },
+  {
+    "id": 5,
+    "domain": "room",
+    "en": "I booked a deluxe room.",
+    "my": "Deluxe Room တစ်ခန်း ဘူကင်လုပ်ထားပါတယ်။"
+  },
+    {
+    "id": 6,
+    "domain": "room",
+    "intent": "breakfast_included",
+    "en": [
+        "Is breakfast included in the room rate?",
+        "Does the room price include breakfast?",
+        "Is breakfast included?",
+        "Do I get breakfast with the room?"
+    ],
+    "my": [
+        "အခန်းဈေးထဲမှာ မနက်စာ ပါဝင်ပါသလား။",
+        "အခန်းခမှာ မနက်စာ ပါလား",
+        "အခန်းခမှာ မနက်စာ ပါပြီးသားလား",
+        "ကျငွေမှာ မနက်စာ ပါလား",
+        "မနက်စာ ပါလား"
+    ]
+    },
+  {
+    "id": 7,
+    "domain": "service",
+    "intent": "airport_pickup",
+    "en": [
+      "Do you offer airport pickup?",
+      "Do you provide airport transfer?",
+      "Can someone pick me up from the airport?"
+    ],
+    "my": [
+      "လေဆိပ်ကြိုပို့ဝန်ဆောင်မှု ရှိပါသလား။",
+      "လေဆိပ်ကနေ လာကြိုမှာလား",
+      "လေဆိပ်ကို လာကြိုပေးလား",
+      "ဟိုတယ်လာဖို့ လာကြိုလို့ရလား",
+      "လာကြိုလို့ရလား",
+      "လာကြိုပေးလား"
+    ]
+  },
+  {
+    "id": 8,
+    "domain": "service",
+    "en": "I need room service, please.",
+    "my": "Room Service လိုပါတယ်။"
+  },
+  {
+    "id": 9,
+    "domain": "staff",
+    "intent": "contact_front_desk",
+    "en": [
+      "Can I speak to the front desk?",
+      "How can I contact reception?",
+      "I want to talk to the front desk."
+    ],
+    "my": [
+      "Front Desk နဲ့ စကားပြောလို့ရမလား။",
+      "Reception နဲ့ ပြောချင်တယ်",
+      "Reception ကို ဘယ်လို ဆက်သွယ်ရမလဲ"
+    ]
+  },
+  {
+    "id": 10,
+    "domain": "payment",
+    "en": "Do you accept credit cards?",
+    "my": "Credit Card လက်ခံပါသလား။"
+  },
+ {
+    "id": 11,
+    "domain": "payment",
+    "intent": "deposit_required",
+    "en": [
+      "Is there a deposit required?",
+      "Do I need to pay a deposit?",
+      "How much is the deposit?"
+    ],
+    "my": [
+      "ကြိုတင်ငွေ လိုအပ်ပါသလား။",
+      "ပိုက်ဆံ ကြိုရှင်းရလား",
+      "Deposit ဘယ်လောက်ပေးရလဲ",
+      "Deposit ပေးရလား"
+    ]
+  },
+  {
+    "id": 12,
+    "domain": "policy",
+    "intent": "cancellation_policy",
+    "en": [
+      "What is your cancellation policy?",
+      "Can I cancel my booking?",
+      "Is there a cancellation fee?"
+    ],
+    "my": [
+      "ဖျက်သိမ်းမူဝါဒ ဘာလဲ။",
+      "Cancel လုပ်လို့ရလား",
+      "Cancel fee ရှိလား",
+      "အခန်းငှားထားတာ cancel ချင်လို့"
+    ]
+  },
+  {
+    "id": 13,
+    "domain": "complaint",
+    "intent": "ac_not_working",
+    "en": [
+      "The air conditioning is not working.",
+      "The AC is broken.",
+      "The room is not cool."
+    ],
+    "my": [
+      "အေးစက်စနစ် မလုပ်ပါဘူး။",
+      "အဲကွန်း မရဘူး",
+      "AC ပျက်နေတယ်",
+      "အခန်းက မအေးဘူး",
+      "အအေးစက်က အေးလည်း မအေးဘူး"
+    ]
+  },
+  {
+    "id": 14,
+    "domain": "complaint",
+    "intent": "room_not_clean",
+    "en": [
+      "My room is not clean.",
+      "The room is dirty.",
+      "Housekeeping did not clean my room."
+    ],
+    "my": [
+      "အခန်း မသန့်ပါဘူး။",
+      "ညစ်ပတ်တယ်",
+      "အခန်းကို သန့်ရှင်းရေး မလုပ်ထားဘူး",
+      "သန့်ရှင်းရေး မကောင်းဘူး"
+    ]
+  },
+  {
+    "id": 15,
+    "domain": "request",
+    "intent": "extra_towels",
+    "en": [
+      "Can I get extra towels?",
+      "I need more towels.",
+      "Can you bring extra towels?"
+    ],
+    "my": [
+      "အဝတ်အထည် ထပ်ပေးလို့ရမလား။",
+      "ဘက်အပို ရလား",
+      "Towel ထပ်ရဦးမလား"
+    ]
+  },
+  {
+    "id": 16,
+    "domain": "request",
+    "intent": "housekeeping_request",
+    "en": [
+      "Please send housekeeping to my room.",
+      "I need housekeeping.",
+      "Can you send cleaning staff?"
+    ],
+    "my": [
+      "Housekeeping ကို အခန်းကို ပို့ပေးပါ။",
+      "Housekeeping ပို့ပေးပါ",
+      "Housekeeping လိုတယ်"
+    ]
+  },
+  {
+    "id": 17,
+    "domain": "room",
+    "intent": "suite_availability",
+    "en": [
+      "Do you have a suite available?",
+      "Is there any suite available?",
+      "I want to stay in a suite."
+    ],
+    "my": [
+      "Suite အခန်းလွတ် ရှိပါသလား။",
+      "Suite ရသေးလား",
+      "Suite မှာ နေချင်တာ",
+      "Suite အားလား"
+    ]
+  },
+  {
+    "id": 18,
+    "domain": "location",
+    "intent": "hotel_location",
+    "en": [
+      "Where is the hotel located?",
+      "Where is your hotel?",
+      "How can I find the hotel?"
+    ],
+    "my": [
+      "ဟိုတယ် ဘယ်မှာရှိပါသလဲ။",
+      "hotel က ဘယ်မှာလဲ",
+      "ဟိုတယ်ကို ဘယ်လို ရှာရမလဲ"
+    ]
+  },
+  {
+    "id": 19,
+    "domain": "amenities",
+    "intent": "wifi_available",
+    "en": [
+      "Is there free Wi-Fi?",
+      "Do you provide free Wi-Fi?",
+      "Is Wi-Fi free?"
+    ],
+    "my": [
+      "Wi-Fi အခမဲ့ ရှိပါသလား။",
+      "ဝိုင်ဖိုင် အလကားလား",
+      "WiFi free လား"
+    ]
+  },
+  {
+    "id": 20,
+    "domain": "amenities",
+    "intent": "pool_available",
+    "en": [
+      "Do you have a swimming pool?",
+      "Is there a pool?",
+      "Can I swim there?"
+    ],
+    "my": [
+      "ရေကူးကန် ရှိပါသလား။",
+      "ရေကူးကန် ရှိလား",
+      "ရေကူးလို့ ရလား"
+    ]
+  }
+]

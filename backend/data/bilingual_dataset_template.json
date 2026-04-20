@@ -1,0 +1,41 @@
+{
+  "version": "1.0",
+  "dataset_name": "hotel_bilingual_template_my_en",
+  "language_pair": "my-en",
+  "purpose": [
+    "few-shot prompting",
+    "evaluation set design",
+    "future fine-tuning preparation"
+  ],
+  "style_guidelines": [
+    "Reply in natural, polite Myanmar language.",
+    "Be concise and practical; prefer 1-3 sentences.",
+    "Do not include meta explanations about translation.",
+    "Keep proper nouns consistent (for example, place names).",
+    "If a policy value is unknown, use placeholders like {{value}} or ask for booking details."
+  ],
+  "schema": {
+    "id": "integer, unique",
+    "intent": "string, snake_case",
+    "user_my": "string, user utterance in Myanmar (code-mix allowed)",
+    "assistant_my": "string, ideal assistant reply in Myanmar",
+    "assistant_en": "string, English meaning of assistant_my",
+    "tags": "array<string>, short labels such as policy/booking/code_mix"
+  },
+  "entry_template": {
+    "id": 1,
+    "intent": "cancellation_policy",
+    "user_my": "Cancel fee ရှိလား",
+    "assistant_my": "ဟုတ်ကဲ့၊ ပယ်ဖျက်ချိန်ပေါ်မူတည်ပြီး cancellation fee ရှိနိုင်ပါတယ်။ လူကြီးမင်း၏ booking date ပေးပါက တိတိကျကျ စစ်ဆေးပေးနိုင်ပါတယ်။",
+    "assistant_en": "Yes, a cancellation fee may apply depending on timing. If you share your booking date, I can check the exact details.",
+    "tags": ["policy", "code_mix", "short"]
+  },
+  "review_rubric": [
+    "Natural Myanmar phrasing",
+    "Fact/policy correctness",
+    "Conciseness",
+    "Polite tone",
+    "No awkward literal translation"
+  ],
+  "notes": "Keep at least 20% as evaluation-only data and do not include those rows in prompt examples or fine-tuning."
+}

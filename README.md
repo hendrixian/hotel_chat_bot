@@ -22,13 +22,24 @@ cd backend
 npm install
 ```
 
-2. Backend environment
+2. Shared environment
 
 ```powershell
 copy .env.example .env
 ```
 
-Update `backend/.env` with your Colab endpoint and token if required.
+Update the root `.env` with your Colab endpoint and token if required.
+
+Recommended mode (single notebook, single Cloudflare URL):
+
+- Set `COLAB_URL` to the URL from `hotel_cb_mbart.ipynb`
+- Set `COLAB_TOKEN` only if your notebook requires auth
+
+Legacy split mode is still supported:
+
+- `COLAB_QWEN_URL` for `/generate`, `/intent`, `/rewrite`
+- `COLAB_MBART_URL` for `/translate`
+- Optional split tokens: `COLAB_QWEN_TOKEN`, `COLAB_MBART_TOKEN`
 
 3. Seed the SQLite database
 
@@ -47,11 +58,7 @@ pip install -r requirements.txt
 
 5. AI core environment
 
-```powershell
-copy .env.example .env
-```
-
-Update `ai-core/.env` if you change the embedding model.
+No separate `ai-core/.env` is needed. The AI core also reads the root `.env`.
 
 6. Build the FAISS index
 
@@ -90,14 +97,31 @@ npm run dev
 
 Open the frontend dev server in your browser and start chatting.
 
+10. Admin console
+
+- Open `/admin` in the frontend (for example `http://localhost:5173/admin`)
+- Login with `ADMIN_USERNAME` / `ADMIN_PASSWORD` from `.env`
+- Admin can manage:
+  - Room inventory by date (`total_rooms`, `available_rooms`, optional price)
+  - Events calendar by date range
+  - Reservations
+  - Custom KB entries (single-edit bilingual workflow)
+
 ## Notes
 
 - If the Colab endpoint is down, the backend falls back to Ollama when `OLLAMA_URL` is set.
 - If `/translate` is unavailable, chat translation can fall back to the LLM (disable with `LLM_TRANSLATE_FALLBACK=0`).
+- `HISTORY_TRANSLATE_MAX_CHARS` controls max Burmese history message length translated per turn (default `420`).
+- Admin auth/session config:
+  - `ADMIN_USERNAME`
+  - `ADMIN_PASSWORD`
+  - `ADMIN_SESSION_HOURS`
 - The FAISS service reads from the same SQLite database to build its index.
 - Update hotel data in `backend/data/kb.json` and then rerun `python build_index.py`.
 - `kb.json` supports bilingual fields using `{ "en": ..., "my": ... }`.
-- Set `DEBUG_LLM=1` in `backend/.env` for backend LLM debugging logs.
+- Admin-created KB entries, events, and room inventory are merged into runtime KB automatically.
+- Set `DEBUG_LLM=1` in the root `.env` for backend LLM debugging logs.
+- `hotel_cb_mbart.ipynb` runs both Qwen and mBART in one API and should be used with one `COLAB_URL`.
 
 ## Docs
 

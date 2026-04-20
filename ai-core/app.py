@@ -4,16 +4,14 @@ from typing import List
 
 import faiss
 import numpy as np
-from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from FlagEmbedding import BGEM3FlagModel
+from config import env_path, env_text
 
-load_dotenv()
-
-MODEL_NAME = os.getenv("MODEL_NAME", "BAAI/bge-m3")
-INDEX_PATH = os.getenv("INDEX_PATH", "./data/index.faiss")
-META_PATH = os.getenv("META_PATH", "./data/meta.json")
+MODEL_NAME = env_text("MODEL_NAME", "BAAI/bge-m3")
+INDEX_PATH = env_path("INDEX_PATH", "ai-core/data/index.faiss")
+META_PATH = env_path("META_PATH", "ai-core/data/meta.json")
 EMBED_MAX_LENGTH = int(os.getenv("EMBED_MAX_LENGTH", "512"))
 EMBED_FP16 = os.getenv("EMBED_FP16", "true").lower() == "true"
 
@@ -49,11 +47,11 @@ def normalize_embeddings(vectors: np.ndarray) -> np.ndarray:
 def startup():
     global model, index, meta
 
-    if not os.path.exists(INDEX_PATH) or not os.path.exists(META_PATH):
+    if not INDEX_PATH.exists() or not META_PATH.exists():
         return
 
     model = BGEM3FlagModel(MODEL_NAME, use_fp16=EMBED_FP16)
-    index = faiss.read_index(INDEX_PATH)
+    index = faiss.read_index(str(INDEX_PATH))
     with open(META_PATH, "r", encoding="utf-8") as f:
         meta = json.load(f)
 

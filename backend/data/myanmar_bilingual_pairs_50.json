@@ -1,0 +1,409 @@
+{
+  "version": "1.0",
+  "dataset_name": "myanmar_bilingual_pairs_50",
+  "language_pair": "my-en",
+  "created_at": "2026-04-20",
+  "pair_count": 50,
+  "pairs": [
+    {
+      "id": 1,
+      "intent": "cancellation_fee",
+      "user_my": "Cancel fee ရှိလား",
+      "assistant_my": "ဟုတ်ကဲ့၊ ပယ်ဖျက်ချိန်ပေါ်မူတည်ပြီး cancellation fee ရှိနိုင်ပါတယ်။ လူကြီးမင်း၏ booking date ပေးပါက တိတိကျကျ စစ်ဆေးပေးနိုင်ပါတယ်။",
+      "assistant_en": "Yes, a cancellation fee may apply depending on when you cancel. If you share your booking date, I can check the exact details.",
+      "tags": ["policy", "code_mix", "short"]
+    },
+    {
+      "id": 2,
+      "intent": "cancellation_policy_window",
+      "user_my": "ဘယ်နှရက်အတွင်း cancel လုပ်ရင် fee မပေးရဘူးလဲ",
+      "assistant_my": "Fee မပေးရသည့် အချိန်ကာလက reservation type အလိုက် မတူနိုင်ပါတယ်။ လူကြီးမင်း၏ booking code ပေးပါက အတည်ပြုစစ်ဆေးပေးပါမယ်။",
+      "assistant_en": "The no-fee cancellation window can vary by reservation type. Share your booking code and I will verify it for you.",
+      "tags": ["policy", "booking", "code_mix"]
+    },
+    {
+      "id": 3,
+      "intent": "check_in_time",
+      "user_my": "Check-in ဘယ်နှနာရီလဲ",
+      "assistant_my": "Check-in အချိန်က {{check_in_time}} ဖြစ်ပါတယ်။ အချိန်မီရောက်မလာနိုင်ပါက ကြိုတင်အသိပေးပေးပါနော်။",
+      "assistant_en": "Check-in time is {{check_in_time}}. If you may arrive late, please let us know in advance.",
+      "tags": ["check_in", "time", "code_mix"]
+    },
+    {
+      "id": 4,
+      "intent": "early_check_in",
+      "user_my": "စောစော check-in လုပ်လို့ရမလား",
+      "assistant_my": "Early check-in ကို availability အပေါ်မူတည်ပြီး စီစဉ်ပေးနိုင်ပါတယ်။ ရောက်မယ့်အချိန်ပေးပါက ကြိုတင်မှတ်တမ်းတင်ပေးပါမယ်။",
+      "assistant_en": "Early check-in can be arranged depending on availability. Share your arrival time and I can note your request in advance.",
+      "tags": ["check_in", "request", "code_mix"]
+    },
+    {
+      "id": 5,
+      "intent": "check_out_time",
+      "user_my": "Check-out အချိန်က ဘယ်လောက်လဲ",
+      "assistant_my": "Check-out အချိန်က {{check_out_time}} ဖြစ်ပါတယ်။ ထွက်ခွာမည့်အချိန်ပြောင်းလဲလိုပါက reception ကို တိုက်ရိုက်အသိပေးနိုင်ပါတယ်။",
+      "assistant_en": "Check-out time is {{check_out_time}}. If your departure time changes, you can inform reception directly.",
+      "tags": ["check_out", "time", "code_mix"]
+    },
+    {
+      "id": 6,
+      "intent": "late_check_out",
+      "user_my": "Late check-out ရနိုင်မလား",
+      "assistant_my": "Late check-out ကို room availability အပေါ်မူတည်ပြီး စီစဉ်ပေးနိုင်ပါတယ်။ လိုအပ်ပါက {{late_checkout_fee_note}} ကိုလည်း ကြိုတင်အသိပေးပေးပါမယ်။",
+      "assistant_en": "Late check-out can be arranged depending on room availability. If needed, we will also inform you in advance about {{late_checkout_fee_note}}.",
+      "tags": ["check_out", "policy", "code_mix"]
+    },
+    {
+      "id": 7,
+      "intent": "room_availability_weekend",
+      "user_my": "ဒီ weekend အခန်းလွတ်သေးလား",
+      "assistant_my": "စစ်ဆေးပေးလို့ရပါတယ်။ ဝင်မယ့်ရက်နဲ့ လူဦးရေ ပြောပြပေးပါက လွတ်နေသောအခန်းအမျိုးအစားတွေကို ချက်ချင်းပြန်ပြောပေးပါမယ်။",
+      "assistant_en": "I can check that for you. Share your check-in date and number of guests, and I will immediately list available room types.",
+      "tags": ["booking", "availability", "weekend"]
+    },
+    {
+      "id": 8,
+      "intent": "room_types",
+      "user_my": "ဘာအခန်း type တွေရှိလဲ",
+      "assistant_my": "လက်ရှိမှာ {{room_type_list}} ရနိုင်ပါတယ်။ လူကြီးမင်းအသုံးပြုချင်တဲ့ budget နဲ့ အိပ်ယာအမျိုးအစားကို ပြောပြပေးရင် သင့်တော်တဲ့အခန်းကို အကြံပြုပေးပါမယ်။",
+      "assistant_en": "Currently we have {{room_type_list}}. If you share your budget and bed preference, I can recommend the best room for you.",
+      "tags": ["room", "selection", "code_mix"]
+    },
+    {
+      "id": 9,
+      "intent": "deluxe_vs_suite",
+      "user_my": "Deluxe နဲ့ Suite ဘာကွာလဲ",
+      "assistant_my": "Deluxe နဲ့ Suite က အခန်းအကျယ်၊ အထိုင်နေရာနဲ့ ပါဝင်ဝန်ဆောင်မှုတွေမှာ ကွာခြားပါတယ်။ လိုချင်တဲ့အသုံးပြုပုံကို ပြောပြပေးရင် သင့်အတွက်သင့်တော်တာကို တိုက်ရိုက်ညွှန်းပေးပါမယ်။",
+      "assistant_en": "Deluxe and Suite differ in room size, seating space, and included services. If you share your usage needs, I can recommend the better option.",
+      "tags": ["room", "comparison", "code_mix"]
+    },
+    {
+      "id": 10,
+      "intent": "extra_bed",
+      "user_my": "Extra bed ထပ်ထည့်လို့ရလား",
+      "assistant_my": "Extra bed ကို အခန်းအမျိုးအစားအလိုက် ထည့်ပေးနိုင်ပါတယ်။ {{extra_bed_fee_note}} ရှိနိုင်လို့ booking code ပေးပါက အတိအကျစစ်ပေးပါမယ်။",
+      "assistant_en": "An extra bed can be added depending on room type. Since {{extra_bed_fee_note}} may apply, share your booking code and I will check exactly.",
+      "tags": ["room", "policy", "code_mix"]
+    },
+    {
+      "id": 11,
+      "intent": "breakfast_included",
+      "user_my": "မနက်စာ ပါပြီးသားလား",
+      "assistant_my": "မနက်စာပါဝင်မှုက booked rate အလိုက် ကွာနိုင်ပါတယ်။ လူကြီးမင်း၏ reservation ကို စစ်ပြီး ပါဝင်/မပါဝင် ကို တိတိကျကျပြောပေးပါမယ်။",
+      "assistant_en": "Breakfast inclusion can vary by booked rate. I can check your reservation and confirm it precisely.",
+      "tags": ["meal", "policy", "booking"]
+    },
+    {
+      "id": 12,
+      "intent": "breakfast_time",
+      "user_my": "Breakfast ဘယ်အချိန်ကနေ ဘယ်အချိန်ထိလဲ",
+      "assistant_my": "Breakfast service အချိန်က {{breakfast_hours}} ဖြစ်ပါတယ်။ မနက်စာအထူးလိုအပ်ချက်ရှိရင် ကြိုတင်ပြောပေးနိုင်ပါတယ်။",
+      "assistant_en": "Breakfast service hours are {{breakfast_hours}}. If you have any dietary requirements, you may inform us in advance.",
+      "tags": ["meal", "time", "code_mix"]
+    },
+    {
+      "id": 13,
+      "intent": "wifi_free",
+      "user_my": "Wi-Fi free လား",
+      "assistant_my": "ဟုတ်ကဲ့၊ {{wifi_policy}} ဖြစ်ပါတယ်။ ချိတ်ဆက်ရာမှာ အခက်အခဲရှိရင် ချက်ချင်းကူညီပေးပါမယ်။",
+      "assistant_en": "Yes, {{wifi_policy}}. If you have any issue connecting, we can help immediately.",
+      "tags": ["amenity", "wifi", "short"]
+    },
+    {
+      "id": 14,
+      "intent": "wifi_password",
+      "user_my": "Wi-Fi password ဘယ်မှာရမလဲ",
+      "assistant_my": "Wi-Fi အကောင့်အချက်အလက်ကို check-in အချိန်မှာပေးထားတဲ့ card မှာ ရရှိနိုင်ပါတယ်။ မတွေ့ပါက front desk ကနေ ပြန်ပေးပို့ပေးပါမယ်။",
+      "assistant_en": "You can find Wi-Fi credentials on the card provided at check-in. If you cannot find it, front desk will resend it.",
+      "tags": ["amenity", "wifi", "support"]
+    },
+    {
+      "id": 15,
+      "intent": "parking_available",
+      "user_my": "ကားပါကင်ရှိလား",
+      "assistant_my": "ပါကင်ဝန်ဆောင်မှု {{parking_policy}} ဖြစ်ပါတယ်။ ကားအမျိုးအစားနဲ့ ရောက်မယ့်အချိန် ပြောပေးရင် နေရာကြိုယူပေးနိုင်ပါတယ်။",
+      "assistant_en": "Parking service is {{parking_policy}}. If you share vehicle type and arrival time, we can reserve a spot in advance.",
+      "tags": ["amenity", "parking", "policy"]
+    },
+    {
+      "id": 16,
+      "intent": "airport_pickup",
+      "user_my": "လေဆိပ်ကြိုပို့ ရှိလား",
+      "assistant_my": "လေဆိပ်ကြိုပို့ကို {{airport_transfer_policy}} အတိုင်း စီစဉ်ပေးနိုင်ပါတယ်။ လေယာဉ်အမှတ်နဲ့ ရောက်ချိန်ပေးပါက ကြိုတင်သတ်မှတ်ပေးပါမယ်။",
+      "assistant_en": "Airport transfer can be arranged under {{airport_transfer_policy}}. Share your flight number and arrival time to schedule it.",
+      "tags": ["transport", "service", "airport"]
+    },
+    {
+      "id": 17,
+      "intent": "shuttle_schedule",
+      "user_my": "Shuttle schedule ရှိလား",
+      "assistant_my": "Shuttle အချိန်ဇယားကို {{shuttle_hours}} အတိုင်း ပြေးဆွဲပါတယ်။ အသုံးပြုလိုသောအချိန်ကို ပြောပေးရင် seat ရှိ/မရှိ စစ်ပေးပါမယ်။",
+      "assistant_en": "The shuttle runs according to {{shuttle_hours}}. Share your preferred time and I can check seat availability.",
+      "tags": ["transport", "schedule", "code_mix"]
+    },
+    {
+      "id": 18,
+      "intent": "hotel_location",
+      "user_my": "ဟိုတယ် ဘယ်မှာရှိလဲ",
+      "assistant_my": "ဟိုတယ်လိပ်စာက {{hotel_address_my}} ဖြစ်ပါတယ်။ လိုချင်ပါက Google Maps link ကိုလည်း ပို့ပေးနိုင်ပါတယ်။",
+      "assistant_en": "The hotel address is {{hotel_address_my}}. I can also send a Google Maps link if you want.",
+      "tags": ["location", "address", "short"]
+    },
+    {
+      "id": 19,
+      "intent": "landmark_distance",
+      "user_my": "ရွှေတိဂုံနဲ့ နီးလား",
+      "assistant_my": "{{landmark_name}} သို့ {{landmark_distance_time}} ခန့်သာ ဖြစ်ပါတယ်။ သွားလာဖို့ taxi သို့မဟုတ် ride-hailing က အဆင်ပြေပါတယ်။",
+      "assistant_en": "It is about {{landmark_distance_time}} to {{landmark_name}}. Taxi or ride-hailing is usually convenient.",
+      "tags": ["location", "landmark", "distance"]
+    },
+    {
+      "id": 20,
+      "intent": "payment_card",
+      "user_my": "Card နဲ့ပေးလို့ရလား",
+      "assistant_my": "ရပါတယ်၊ {{accepted_card_types}} ကို လက်ခံပါတယ်။ အချို့ bank card များတွင် international transaction fee ပေါ်နိုင်ပါတယ်။",
+      "assistant_en": "Yes, we accept {{accepted_card_types}}. Some bank cards may apply international transaction fees.",
+      "tags": ["payment", "card", "code_mix"]
+    },
+    {
+      "id": 21,
+      "intent": "payment_cash",
+      "user_my": "Cash ပဲပေးလို့ရမလား",
+      "assistant_my": "Cash ဖြင့်လည်း ပေးချေနိုင်ပါတယ်။ ငွေကြေးအမျိုးအစားမှာ {{accepted_cash_currency}} ကို အဓိကလက်ခံပါတယ်။",
+      "assistant_en": "You can also pay by cash. We mainly accept {{accepted_cash_currency}} currencies.",
+      "tags": ["payment", "cash", "policy"]
+    },
+    {
+      "id": 22,
+      "intent": "deposit_required",
+      "user_my": "Deposit ပေးရမလား",
+      "assistant_my": "Booking type ပေါ်မူတည်ပြီး deposit လိုအပ်နိုင်ပါတယ်။ reservation နံပါတ်ပေးပါက လို/မလိုကို တိတိကျကျ ပြန်အကြောင်းကြားပါမယ်။",
+      "assistant_en": "A deposit may be required depending on booking type. Share your reservation number and I will confirm precisely.",
+      "tags": ["payment", "deposit", "booking"]
+    },
+    {
+      "id": 23,
+      "intent": "invoice_receipt",
+      "user_my": "Invoice/receipt ထုတ်ပေးလား",
+      "assistant_my": "ရပါတယ်၊ invoice သို့ receipt ထုတ်ပေးနိုင်ပါတယ်။ လိုအပ်တဲ့ company name နဲ့ tax info ရှိရင် ကြိုတင်ပေးပို့ပေးပါ။",
+      "assistant_en": "Yes, we can issue an invoice or receipt. If needed, please send company name and tax info in advance.",
+      "tags": ["payment", "document", "business"]
+    },
+    {
+      "id": 24,
+      "intent": "smoking_policy",
+      "user_my": "ဆေးလိပ်သောက်လို့ရလား",
+      "assistant_my": "ဟိုတယ်၏ smoking policy အရ {{smoking_policy_note}} ဖြစ်ပါတယ်။ သတ်မှတ်ဧရိယာကို အသုံးပြုဖို့ မေတ္တာရပ်ခံပါတယ်။",
+      "assistant_en": "Under the hotel smoking policy, {{smoking_policy_note}}. Please use only designated smoking areas.",
+      "tags": ["policy", "smoking", "compliance"]
+    },
+    {
+      "id": 25,
+      "intent": "pet_policy",
+      "user_my": "အိမ်မွေးတိရစ္ဆာန် ယူလာလို့ရမလား",
+      "assistant_my": "Pet policy က {{pet_policy_note}} ဖြစ်ပါတယ်။ တိရစ္ဆာန်အမျိုးအစားနဲ့ အလေးချိန်ကို ပြောပေးရင် အဆင်ပြေမှုကို စစ်ပေးနိုင်ပါတယ်။",
+      "assistant_en": "The pet policy is {{pet_policy_note}}. If you share pet type and weight, I can check your eligibility.",
+      "tags": ["policy", "pet", "booking"]
+    },
+    {
+      "id": 26,
+      "intent": "pool_hours",
+      "user_my": "Swimming pool ဘယ်ချိန်ဖွင့်လဲ",
+      "assistant_my": "Pool အသုံးပြုချိန်က {{pool_hours}} ဖြစ်ပါတယ်။ အသုံးပြုမတိုင်ခင် safety guideline ကို လိုက်နာပေးပါနော်။",
+      "assistant_en": "Pool hours are {{pool_hours}}. Please follow the safety guidelines before use.",
+      "tags": ["amenity", "pool", "time"]
+    },
+    {
+      "id": 27,
+      "intent": "gym_hours",
+      "user_my": "Gym 24 နာရီဖွင့်လား",
+      "assistant_my": "Gym အချိန်က {{gym_hours}} ဖြစ်ပါတယ်။ 24-hour service ရှိ/မရှိကို လက်ရှိစည်းမျဉ်းအရ အတည်ပြုပေးနိုင်ပါတယ်။",
+      "assistant_en": "Gym hours are {{gym_hours}}. I can confirm whether 24-hour access is available under current policy.",
+      "tags": ["amenity", "gym", "policy"]
+    },
+    {
+      "id": 28,
+      "intent": "housekeeping_request",
+      "user_my": "အခန်းသန့်ရှင်းရေး လုပ်ပေးပါ",
+      "assistant_my": "သန့်ရှင်းရေးအဖွဲ့ကို ချက်ချင်းအကြောင်းကြားပေးပါမယ်။ လူကြီးမင်း၏ အခန်းနံပါတ်ကို ပြောပေးပါနော်။",
+      "assistant_en": "I will notify housekeeping right away. Please share your room number.",
+      "tags": ["service", "housekeeping", "urgent"]
+    },
+    {
+      "id": 29,
+      "intent": "extra_towels",
+      "user_my": "Towel ထပ်လိုတယ်",
+      "assistant_my": "ရပါတယ်၊ towel အပိုများကို ပို့ပေးပါမယ်။ အခန်းနံပါတ်ပြောပေးပါက အမြန်ဆုံးပို့ပေးနိုင်ပါတယ်။",
+      "assistant_en": "Sure, we can send extra towels. Share your room number and we will deliver them as soon as possible.",
+      "tags": ["service", "room", "code_mix"]
+    },
+    {
+      "id": 30,
+      "intent": "ac_not_working",
+      "user_my": "AC မအေးဘူး",
+      "assistant_my": "အဆင်မပြေတာအတွက် တောင်းပန်ပါတယ်။ အင်ဂျင်နီယာအဖွဲ့ကို ချက်ချင်းပို့ပေးပါမယ်၊ အခန်းနံပါတ်ပေးပါနော်။",
+      "assistant_en": "Sorry for the inconvenience. I will send our engineering team immediately; please share your room number.",
+      "tags": ["complaint", "maintenance", "urgent"]
+    },
+    {
+      "id": 31,
+      "intent": "hot_water_issue",
+      "user_my": "ရေပူမလာဘူး",
+      "assistant_my": "စိတ်မပူပါနဲ့၊ maintenance အဖွဲ့ကို အရေးပေါ်အကြောင်းကြားပေးပါမယ်။ အခန်းနံပါတ်နဲ့ ပြဿနာဖြစ်နေချိန်ကို ပြောပေးပါ။",
+      "assistant_en": "No worries, I will alert maintenance urgently. Please share your room number and when the issue occurs.",
+      "tags": ["complaint", "maintenance", "water"]
+    },
+    {
+      "id": 32,
+      "intent": "room_not_clean",
+      "user_my": "အခန်းမသန့်ဘူး",
+      "assistant_my": "အဆင်မပြေမှုအတွက် တောင်းပန်ပါတယ်။ housekeeping supervisor ကို ချက်ချင်းအကြောင်းကြားပြီး အခန်းကို ပြန်စစ်ဆေးသန့်ရှင်းပေးပါမယ်။",
+      "assistant_en": "Sorry for the inconvenience. I will notify the housekeeping supervisor immediately to re-clean and inspect your room.",
+      "tags": ["complaint", "housekeeping", "quality"]
+    },
+    {
+      "id": 33,
+      "intent": "noisy_room",
+      "user_my": "အခန်းဘေးက အသံအရမ်းကျယ်တယ်",
+      "assistant_my": "အဆင်မပြေတာအတွက် တောင်းပန်ပါတယ်။ လုံခြုံရေးအဖွဲ့ကို အကြောင်းကြားပြီး တိတ်ဆိတ်အောင် ဆောင်ရွက်ပေးပါမယ်။ လိုအပ်ပါက အခန်းပြောင်းရွှေ့မှုကိုလည်း စီစဉ်ပေးနိုင်ပါတယ်။",
+      "assistant_en": "Sorry for the inconvenience. I will inform security to handle the noise. If needed, we can also arrange a room change.",
+      "tags": ["complaint", "noise", "support"]
+    },
+    {
+      "id": 34,
+      "intent": "change_room_request",
+      "user_my": "အခန်းပြောင်းချင်တယ်",
+      "assistant_my": "အခန်းပြောင်းရွှေ့မှုကို availability အပေါ်မူတည်ပြီး စီစဉ်ပေးနိုင်ပါတယ်။ ဘာကြောင့်ပြောင်းချင်တာလဲ ပြောပေးရင် ပိုသင့်တော်တဲ့အခန်းကို ရွေးပေးပါမယ်။",
+      "assistant_en": "We can arrange a room change depending on availability. If you share the reason, I can suggest a more suitable room.",
+      "tags": ["room", "request", "support"]
+    },
+    {
+      "id": 35,
+      "intent": "booking_modify_dates",
+      "user_my": "booking ရက်ပြောင်းလို့ရမလား",
+      "assistant_my": "ရပါတယ်၊ rate rule နဲ့ availability အလိုက် ပြောင်းလဲနိုင်မှုကို စစ်ဆေးရပါမယ်။ reservation number နဲ့ အသစ်လိုချင်တဲ့ရက်ကို ပေးပါနော်။",
+      "assistant_en": "Yes, date changes are possible subject to rate rules and availability. Please share your reservation number and preferred new dates.",
+      "tags": ["booking", "modify", "policy"]
+    },
+    {
+      "id": 36,
+      "intent": "booking_confirm",
+      "user_my": "ကျွန်တော် booking confirm ဖြစ်ပြီလား",
+      "assistant_my": "စစ်ဆေးပေးလို့ရပါတယ်။ booking number သို့မဟုတ် ဖုန်းနံပါတ်ပေးပါက confirmation status ကို ချက်ချင်းပြောပေးပါမယ်။",
+      "assistant_en": "I can check that. Share your booking number or phone number and I will confirm the status right away.",
+      "tags": ["booking", "status", "support"]
+    },
+    {
+      "id": 37,
+      "intent": "booking_cancel",
+      "user_my": "booking ကိုဖျက်ချင်တယ်",
+      "assistant_my": "ကူညီပေးပါမယ်။ ပယ်ဖျက်မီ policy ကို စစ်ပြီး cancellation လုပ်ငန်းစဉ်ကို ဆက်လုပ်ပေးပါမယ်၊ reservation number ပေးပါနော်။",
+      "assistant_en": "I can help with that. I will first check the cancellation policy and then proceed; please share your reservation number.",
+      "tags": ["booking", "cancel", "policy"]
+    },
+    {
+      "id": 38,
+      "intent": "child_policy",
+      "user_my": "ကလေးတစ်ယောက်နဲ့တည်းရင် extra charge ရှိလား",
+      "assistant_my": "ကလေးနေထိုင်မှုစည်းကမ်းက အသက်နှင့်အိပ်ယာလိုအပ်ချက်အလိုက် ကွာနိုင်ပါတယ်။ ကလေးအသက်နဲ့ အိပ်ယာလို/မလို ပြောပေးရင် တိတိကျကျတွက်ပေးပါမယ်။",
+      "assistant_en": "Child stay policy can vary by age and bedding needs. Share the child’s age and whether an extra bed is needed, and I can calculate it precisely.",
+      "tags": ["policy", "family", "pricing"]
+    },
+    {
+      "id": 39,
+      "intent": "id_required",
+      "user_my": "check-in လုပ်ဖို့ ဘာ ID လိုအပ်လဲ",
+      "assistant_my": "Check-in အတွက် valid ID သို့မဟုတ် passport လိုအပ်ပါတယ်။ booking name နဲ့ ID name တူနေဖို့လည်း အကြံပြုပါတယ်။",
+      "assistant_en": "A valid ID or passport is required for check-in. It is also recommended that the booking name matches the ID name.",
+      "tags": ["check_in", "policy", "document"]
+    },
+    {
+      "id": 40,
+      "intent": "security_concern",
+      "user_my": "လုံခြုံရေးအတွက် စိတ်ပူတယ်",
+      "assistant_my": "လုံခြုံရေးပိုင်းကို အရေးကြီးစွာ စောင့်ကြည့်နေပါတယ်။ လူကြီးမင်းမသက်သာတဲ့အချက်ရှိပါက security team ကို ချက်ချင်းချိတ်ဆက်ပေးပါမယ်။",
+      "assistant_en": "Your safety is very important to us. If there is any concern, I can connect you with the security team immediately.",
+      "tags": ["security", "support", "urgent"]
+    },
+    {
+      "id": 41,
+      "intent": "lost_item",
+      "user_my": "ပစ္စည်းပျောက်သွားတယ်",
+      "assistant_my": "စိတ်မပူပါနဲ့၊ lost-and-found စနစ်အတိုင်း ချက်ချင်းစစ်ပေးပါမယ်။ ပျောက်ဆုံးပစ္စည်းအမျိုးအစားနဲ့ နောက်ဆုံးတွေ့ခဲ့တဲ့နေရာကို ပြောပေးပါ။",
+      "assistant_en": "No worries, we will check immediately through lost-and-found procedures. Please share the item type and where you last saw it.",
+      "tags": ["support", "lost_found", "urgent"]
+    },
+    {
+      "id": 42,
+      "intent": "luggage_storage",
+      "user_my": "check-out ပြီး luggage ခဏအပ်လို့ရလား",
+      "assistant_my": "ရပါတယ်၊ luggage storage ကို ခေတ္တအပ်နှံနိုင်ပါတယ်။ claim tag ကို သိမ်းထားပေးပါနော်။",
+      "assistant_en": "Yes, you can store your luggage temporarily after check-out. Please keep your claim tag safely.",
+      "tags": ["service", "luggage", "check_out"]
+    },
+    {
+      "id": 43,
+      "intent": "wake_up_call",
+      "user_my": "မနက် ၅ နာရီ wake-up call ရမလား",
+      "assistant_my": "ရပါတယ်၊ wake-up call ကို {{wake_up_time}} မှာ စီစဉ်ပေးပါမယ်။ အခန်းနံပါတ်ကို အတည်ပြုပေးပါနော်။",
+      "assistant_en": "Certainly, we can schedule a wake-up call at {{wake_up_time}}. Please confirm your room number.",
+      "tags": ["service", "time", "code_mix"]
+    },
+    {
+      "id": 44,
+      "intent": "laundry_service",
+      "user_my": "Laundry service ရှိလား",
+      "assistant_my": "ရှိပါတယ်၊ laundry service ကို {{laundry_hours}} အတွင်း အသုံးပြုနိုင်ပါတယ်။ same-day service ရှိ/မရှိကိုလည်း စစ်ပေးနိုင်ပါတယ်။",
+      "assistant_en": "Yes, laundry service is available during {{laundry_hours}}. I can also check whether same-day service is available.",
+      "tags": ["service", "laundry", "code_mix"]
+    },
+    {
+      "id": 45,
+      "intent": "restaurant_hours",
+      "user_my": "ဟိုတယ်စားသောက်ဆိုင် ဘယ်ချိန်ဖွင့်လဲ",
+      "assistant_my": "စားသောက်ဆိုင်ဖွင့်ချိန်က {{restaurant_hours}} ဖြစ်ပါတယ်။ နေရာမလွတ်ခင် reservation ကြိုတင်တင်ထားတာက ပိုအဆင်ပြေပါတယ်။",
+      "assistant_en": "Restaurant hours are {{restaurant_hours}}. It is better to reserve in advance when availability is limited.",
+      "tags": ["food", "time", "restaurant"]
+    },
+    {
+      "id": 46,
+      "intent": "vegetarian_food",
+      "user_my": "သက်သတ်လွတ် menu ရှိလား",
+      "assistant_my": "ရှိပါတယ်၊ vegetarian option တွေကို စီစဉ်ပေးနိုင်ပါတယ်။ အစားအသောက်ကန့်သတ်ချက်ရှိရင် ကြိုတင်ပြောပေးပါနော်။",
+      "assistant_en": "Yes, vegetarian options are available. Please inform us in advance if you have dietary restrictions.",
+      "tags": ["food", "diet", "support"]
+    },
+    {
+      "id": 47,
+      "intent": "nearby_atm",
+      "user_my": "အနီးဆုံး ATM ဘယ်နားမှာရှိလဲ",
+      "assistant_my": "အနီးဆုံး ATM က {{nearest_atm_location}} မှာ ရှိပါတယ်။ လိုပါက သွားရမယ့်လမ်းကြောင်းကိုလည်း ပို့ပေးနိုင်ပါတယ်။",
+      "assistant_en": "The nearest ATM is at {{nearest_atm_location}}. I can also send you the route if needed.",
+      "tags": ["location", "atm", "guide"]
+    },
+    {
+      "id": 48,
+      "intent": "emergency_contact",
+      "user_my": "အရေးပေါ်အတွက် ဘယ်ကိုဖုန်းဆက်ရမလဲ",
+      "assistant_my": "အရေးပေါ်အခြေအနေဖြစ်ပါက front desk {{front_desk_phone}} ကို ချက်ချင်းဆက်သွယ်ပါ။ လိုအပ်ပါက local emergency service နဲ့လည်း ချိတ်ဆက်ပေးပါမယ်။",
+      "assistant_en": "In emergencies, contact front desk at {{front_desk_phone}} immediately. If needed, we can also connect local emergency services.",
+      "tags": ["emergency", "contact", "urgent"]
+    },
+    {
+      "id": 49,
+      "intent": "extend_stay",
+      "user_my": "တည်းခိုချိန် တစ်ညထပ်တိုးချင်တယ်",
+      "assistant_my": "တိုးတည်းခြင်းကို availability နဲ့ rate အလိုက် စစ်ပေးနိုင်ပါတယ်။ လက်ရှိအခန်းကို ဆက်တည်းချင်လား မေးမြန်းပြီး စီစဉ်ပေးပါမယ်။",
+      "assistant_en": "I can check extension options based on availability and rates. I will also check if you can stay in the same room.",
+      "tags": ["booking", "extend", "stay"]
+    },
+    {
+      "id": 50,
+      "intent": "checkout_transport_help",
+      "user_my": "မနက်ဖြန် check-out လုပ်ပြီး taxi စီစဉ်ပေးလို့ရမလား",
+      "assistant_my": "ရပါတယ်၊ check-out အချိန်နဲ့ သွားမယ့်နေရာပေးပါက taxi ကြိုတင်စီစဉ်ပေးပါမယ်။ လိုအပ်ရင် ခန့်မှန်းကုန်ကျစရိတ်ကိုလည်း ပြောပေးနိုင်ပါတယ်။",
+      "assistant_en": "Certainly. Share your check-out time and destination, and I can arrange a taxi in advance. I can also provide an estimated fare if needed.",
+      "tags": ["check_out", "transport", "support"]
+    }
+  ]
+}

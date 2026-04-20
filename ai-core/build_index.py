@@ -4,15 +4,13 @@ from pathlib import Path
 
 import faiss
 import numpy as np
-from dotenv import load_dotenv
 from FlagEmbedding import BGEM3FlagModel
+from config import env_path, env_text
 
-load_dotenv()
-
-MODEL_NAME = os.getenv("MODEL_NAME", "BAAI/bge-m3")
-KB_PATH = os.getenv("KB_PATH", "../backend/data/kb.json")
-INDEX_PATH = os.getenv("INDEX_PATH", "./data/index.faiss")
-META_PATH = os.getenv("META_PATH", "./data/meta.json")
+MODEL_NAME = env_text("MODEL_NAME", "BAAI/bge-m3")
+KB_PATH = env_path("KB_PATH", "backend/data/kb.json")
+INDEX_PATH = env_path("INDEX_PATH", "ai-core/data/index.faiss")
+META_PATH = env_path("META_PATH", "ai-core/data/meta.json")
 EMBED_MAX_LENGTH = int(os.getenv("EMBED_MAX_LENGTH", "512"))
 EMBED_FP16 = os.getenv("EMBED_FP16", "true").lower() == "true"
 
@@ -192,7 +190,7 @@ def build_docs(kb, lang):
 
 
 def load_docs():
-    if not os.path.exists(KB_PATH):
+    if not KB_PATH.exists():
         return []
 
     with open(KB_PATH, "r", encoding="utf-8") as f:
@@ -225,8 +223,8 @@ def main():
     index = faiss.IndexFlatIP(dim)
     index.add(embeddings)
 
-    Path(os.path.dirname(INDEX_PATH) or ".").mkdir(parents=True, exist_ok=True)
-    faiss.write_index(index, INDEX_PATH)
+    INDEX_PATH.parent.mkdir(parents=True, exist_ok=True)
+    faiss.write_index(index, str(INDEX_PATH))
 
     with open(META_PATH, "w", encoding="utf-8") as f:
         json.dump(docs, f, ensure_ascii=False, indent=2)
