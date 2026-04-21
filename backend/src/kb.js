@@ -1,8 +1,9 @@
 const fs = require("fs");
 const path = require("path");
-const { listRoomInventory, listEvents, listKbEntries } = require("./db");
+const { listRoomInventory, listEvents, listReservations, listKbEntries } = require("./db");
+const { resolveRepoPath } = require("./env");
 
-const KB_PATH = process.env.KB_PATH || path.join(__dirname, "..", "data", "kb.json");
+const KB_PATH = resolveRepoPath(process.env.KB_PATH, ["backend", "data", "kb.json"]);
 
 let cachedKb = null;
 let cachedMtime = 0;
@@ -67,6 +68,7 @@ function mergeDynamicData(baseKb) {
 
   const inventory = listRoomInventory();
   const events = listEvents();
+  const reservations = listReservations();
   const kbEntries = listKbEntries();
 
   if (inventory.length > 0) {
@@ -86,6 +88,7 @@ function mergeDynamicData(baseKb) {
       id: row.id,
       title: { en: row.title_en, my: row.title_my },
       description: { en: row.description_en || "", my: row.description_my || "" },
+      venue: row.venue || "",
       start_date: row.start_date,
       end_date: row.end_date
     }));
@@ -99,6 +102,20 @@ function mergeDynamicData(baseKb) {
       title: { en: row.title_en, my: row.title_my },
       content: { en: row.content_en, my: row.content_my },
       tags: parseTags(row.tags),
+      updated_at: row.updated_at
+    }));
+  }
+
+  if (reservations.length > 0) {
+    kb.reservations = reservations.map((row) => ({
+      id: row.id,
+      guest_name: row.guest_name,
+      room_type: row.room_type,
+      check_in_date: row.check_in_date,
+      check_out_date: row.check_out_date,
+      room_count: row.room_count,
+      status: row.status,
+      notes: row.notes || "",
       updated_at: row.updated_at
     }));
   }
@@ -198,7 +215,7 @@ function kbToDocs(kb) {
   if (Array.isArray(kb.events_calendar)) {
     kb.events_calendar.forEach((event) => {
       docs.push({
-        text: `Event ${event.title} from ${event.start_date} to ${event.end_date}. ${event.description || ""}`.trim(),
+        text: `Event ${event.title}${event.venue ? ` at ${event.venue}` : ""} from ${event.start_date} to ${event.end_date}. ${event.description || ""}`.trim(),
         source: "event"
       });
     });
@@ -209,6 +226,15 @@ function kbToDocs(kb) {
       docs.push({
         text: `${entry.category}: ${entry.title}. ${entry.content}. Tags: ${formatList(entry.tags)}.`,
         source: "admin_kb"
+      });
+    });
+  }
+
+  if (Array.isArray(kb.reservations)) {
+    kb.reservations.forEach((row) => {
+      docs.push({
+        text: `Reservation for ${row.room_type}: ${row.check_in_date} to ${row.check_out_date}, ${row.room_count} room(s), status ${row.status}.${row.notes ? ` Notes: ${row.notes}.` : ""}`,
+        source: "reservation"
       });
     });
   }

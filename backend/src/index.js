@@ -78,6 +78,8 @@ const {
 const { buildPrompt, buildRefinePrompt } = require("./prompt");
 
 const BURMESE_UNAVAILABLE = "\u1005\u1014\u1005\u103a\u1000\u102d\u102f \u101a\u102c\u101a\u102e\u1021\u101e\u102f\u1036\u1038\u1019\u1015\u103c\u102f\u1014\u102d\u102f\u1004\u103a\u1015\u102b\u104b \u1001\u100f\u1014\u1031\u102c\u1000\u103a\u1019\u103e \u1015\u103c\u1014\u103a\u101c\u100a\u103a\u1000\u103c\u102d\u102f\u1038\u1005\u102c\u1038\u1015\u102b\u104b";
+const BURMESE_TRANSLATION_PARTIAL_PREFIX =
+  "\u1018\u102c\u101e\u102c\u1015\u103c\u1014\u103a\u1001\u103c\u1004\u103a\u1038 \u1019\u1015\u103c\u100a\u1037\u103a\u1005\u102f\u1036\u101e\u1031\u1038\u101e\u1031\u102c\u1000\u103c\u1031\u102c\u1004\u1037\u103a English \u1021\u1014\u1031\u1016\u103c\u1004\u1037\u103a \u1016\u1031\u102c\u103a\u1015\u103c\u1015\u102b\u1019\u100a\u103a\u104b";
 const MBART_SRC_MY = process.env.MBART_SRC_MY || process.env.NLLB_SRC_MY || "mya_Mymr";
 const MBART_TGT_EN = process.env.MBART_TGT_EN || process.env.NLLB_TGT_EN || "eng_Latn";
 const BURMESE_CHAR_REGEX = /[\u1000-\u109F]/;
@@ -184,6 +186,26 @@ function cleanTranslationOutput(text) {
   cleaned = cleaned.replace(/^\s*(translation|translated text|output)\s*[:\-]\s*/i, "");
   cleaned = cleaned.replace(/^[\s"]+|[\s"]+$/g, "");
   return cleaned.trim();
+}
+
+function stripMarkdownForTranslation(text) {
+  if (!text) return "";
+  return String(text)
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[*_`>#]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function buildBurmeseFallbackFromEnglish(text) {
+  const english = cleanModelOutput(text) || String(text || "").trim();
+  if (!english) return BURMESE_UNAVAILABLE;
+
+  if (/standard room/i.test(english) || /deluxe room/i.test(english)) {
+    return "\u101c\u1000\u103a\u101b\u103e\u102d \u101b\u1014\u102d\u102f\u1004\u103a\u101e\u1031\u102c \u1021\u1001\u1014\u103a\u1038\u1021\u1019\u103b\u102d\u102f\u1038\u1021\u1005\u102c\u1038\u1019\u103b\u102c\u1038\u1019\u103e\u102c Standard Room \u1014\u103e\u1004\u1037\u103a Deluxe Room \u1016\u103c\u1005\u103a\u1015\u102b\u101e\u100a\u103a\u104b \u1021\u101e\u1031\u1038\u1005\u102d\u1010\u103a \u101e\u102d\u101c\u102d\u102f\u1015\u102b\u1000 \u1015\u103c\u1031\u102c\u1015\u1031\u1038\u1015\u102b\u104b";
+  }
+
+  return `${BURMESE_TRANSLATION_PARTIAL_PREFIX}\n\nEnglish: ${english}`;
 }
 
 function tokenizeForRepetition(text) {
@@ -539,6 +561,58 @@ function sanitizeAdminUser(user) {
   };
 }
 
+function todayIsoDate() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function isUpcomingEventsQuery(message) {
+  const text = String(message || "").trim();
+  if (!text) return false;
+  return /(upcoming|next|future)\s+events?/i.test(text)
+    || /\bevents?\b/i.test(text)
+    || /ပွဲ|အခမ်းအနား|လာမယ့်ပွဲ|အဖြစ်အပျက်/.test(text);
+}
+
+function formatUpcomingEventsReply(language, rows) {
+  const events = Array.isArray(rows) ? rows.slice(0, 6) : [];
+
+  if (language === "my") {
+    if (events.length === 0) {
+      return "လတ်တလော ကြိုတင်စီစဉ်ထားသော ပွဲအစီအစဉ်မရှိသေးပါ။ အသေးစိတ်အတွက် Front Desk ကို ဆက်သွယ်မေးမြန်းနိုင်ပါသည်။";
+    }
+
+    const lines = ["လာမည့် ပွဲအစီအစဉ်များမှာ:"];
+    for (let i = 0; i < events.length; i += 1) {
+      const row = events[i];
+      const title = String(row.title_my || row.title_en || "Event").trim();
+      const desc = String(row.description_my || row.description_en || "").trim();
+      const venue = String(row.venue || "").trim();
+      const dateRange = row.start_date === row.end_date
+        ? row.start_date
+        : `${row.start_date} မှ ${row.end_date}`;
+      lines.push(`${i + 1}. ${title}${venue ? ` (${venue})` : ""} (${dateRange})${desc ? ` - ${desc}` : ""}`);
+    }
+    return lines.join("\n");
+  }
+
+  if (events.length === 0) {
+    return "There are no upcoming events scheduled at the moment. Please check with the front desk for updates.";
+  }
+
+  const lines = ["Here are the upcoming events:"];
+  for (let i = 0; i < events.length; i += 1) {
+    const row = events[i];
+    const title = String(row.title_en || row.title_my || "Event").trim();
+    const desc = String(row.description_en || row.description_my || "").trim();
+    const venue = String(row.venue || "").trim();
+    const dateRange = row.start_date === row.end_date
+      ? row.start_date
+      : `${row.start_date} to ${row.end_date}`;
+    lines.push(`${i + 1}. ${title}${venue ? ` (${venue})` : ""} (${dateRange})${desc ? ` - ${desc}` : ""}`);
+  }
+  return lines.join("\n");
+}
+
 function extractAdminToken(req) {
   const auth = String(req.headers.authorization || "");
   if (/^bearer\s+/i.test(auth)) {
@@ -800,8 +874,13 @@ async function startServer() {
   app.post("/api/admin/events", requireAdmin, adminAsync(async (req, res) => {
     const startDate = normalizeDateInput(req.body?.startDate);
     const endDate = normalizeDateInput(req.body?.endDate);
+    const venueRaw = String(req.body?.venue || "").trim();
+    const venue = venueRaw === "[object Object]" ? "" : venueRaw;
     if (!isValidDateInput(startDate) || !isValidDateInput(endDate)) {
       return res.status(400).json({ error: "startDate and endDate are required in YYYY-MM-DD format" });
+    }
+    if (!venue) {
+      return res.status(400).json({ error: "venue is required for events" });
     }
 
     const titlePair = await resolveBilingualPair({
@@ -824,6 +903,7 @@ async function startServer() {
       titleMy: titlePair.my,
       descriptionEn: descPair.en,
       descriptionMy: descPair.my,
+      venue,
       startDate,
       endDate
     });
@@ -843,8 +923,13 @@ async function startServer() {
 
     const startDate = normalizeDateInput(req.body?.startDate || existing.start_date);
     const endDate = normalizeDateInput(req.body?.endDate || existing.end_date);
+    const venueRaw = String(req.body?.venue ?? existing.venue ?? "").trim();
+    const venue = venueRaw === "[object Object]" ? "" : venueRaw;
     if (!isValidDateInput(startDate) || !isValidDateInput(endDate)) {
       return res.status(400).json({ error: "startDate and endDate are required in YYYY-MM-DD format" });
+    }
+    if (!venue) {
+      return res.status(400).json({ error: "venue is required for events" });
     }
 
     const titlePair = await resolveBilingualPair(
@@ -871,6 +956,7 @@ async function startServer() {
       titleMy: titlePair.my,
       descriptionEn: descPair.en,
       descriptionMy: descPair.my,
+      venue,
       startDate,
       endDate
     });
@@ -1060,13 +1146,17 @@ async function startServer() {
     res.json({ ok: true });
   });
 
-  app.get("/api/kb", (req, res) => {
+  app.get("/api/admin/kb", requireAdmin, (req, res) => {
     const lang = req.query?.lang === "my" ? "my" : req.query?.lang === "en" ? "en" : null;
     const kb = lang ? getKbLocalized(lang) : getKb();
     if (!kb) {
       return res.status(500).json({ error: "Knowledge base not available" });
     }
     res.json(kb);
+  });
+
+  app.get("/api/kb", (req, res) => {
+    res.status(403).json({ error: "Use /api/admin/kb with admin authentication" });
   });
 
   app.post("/api/translate-ui", async (req, res) => {
@@ -1108,6 +1198,49 @@ async function startServer() {
 
     let contextDocs = [];
     let replyText = "";
+    const directUpcomingEvents = isUpcomingEventsQuery(message);
+    trace("direct.upcomingEvents", directUpcomingEvents);
+
+    if (directUpcomingEvents) {
+      const today = todayIsoDate();
+      const upcomingEvents = listEvents({ dateFrom: today });
+      const normalizedUpcoming = upcomingEvents.map((row) => ({
+        id: row.id,
+        title_en: row.title_en,
+        title_my: row.title_my,
+        description_en: row.description_en,
+        description_my: row.description_my,
+        start_date: row.start_date,
+        end_date: row.end_date
+      }));
+      trace("direct.upcomingEvents.count", normalizedUpcoming.length);
+
+      replyText = formatUpcomingEventsReply(language, normalizedUpcoming);
+      contextDocs = normalizedUpcoming.map((row) => ({
+        source: "event-direct",
+        text: `Event ${row.title_en || row.title_my} from ${row.start_date} to ${row.end_date}. ${row.description_en || row.description_my || ""}`.trim()
+      }));
+
+      if (language === "my") {
+        replyText = enforceBurmesePoliteAddress(replyText);
+      }
+
+      logMessage(sessionId, "user", message);
+      logMessage(sessionId, "assistant", replyText);
+
+      const payload = {
+        sessionId,
+        intent,
+        reply: replyText,
+        context: contextDocs
+      };
+
+      if (DEBUG_TRACE) {
+        payload.debug = entries;
+      }
+
+      return res.json(payload);
+    }
 
     try {
       if (language === "my") {
@@ -1148,26 +1281,33 @@ async function startServer() {
           });
           trace("refined.en", refinedEnglish);
 
-          const translatedBack = await safeTranslateWithFallback(refinedEnglish, MBART_TGT_EN, MBART_SRC_MY);
+          const translationInput = stripMarkdownForTranslation(refinedEnglish);
+          trace("translate.en->my.input", translationInput);
+          const translatedBack = await safeTranslateWithFallback(translationInput, MBART_TGT_EN, MBART_SRC_MY);
           trace("translate.en->my", translatedBack);
           const translationBackOk = hasBurmese(translatedBack);
           trace("translate.en->my.ok", translationBackOk);
 
-          try {
-            const rewriteInput = translationBackOk ? translatedBack : refinedEnglish;
-            const rewritten = await callBurmeseAIRewrite({ text: rewriteInput });
-            const cleanedRewrite = cleanRewriteOutput(rewritten);
-            if (cleanedRewrite && hasBurmese(cleanedRewrite)) {
-              replyText = cleanedRewrite;
-              trace("rewrite.my", replyText);
-            } else {
-              replyText = translationBackOk ? translatedBack : BURMESE_UNAVAILABLE;
-              trace("rewrite.my", translationBackOk ? "(fallback) non-Burmese rewrite" : "(fallback) unavailable");
+          if (!translationBackOk) {
+            replyText = buildBurmeseFallbackFromEnglish(translationInput);
+            trace("rewrite.my", "(fallback) partial translation");
+          } else {
+            try {
+              const rewriteInput = translatedBack;
+              const rewritten = await callBurmeseAIRewrite({ text: rewriteInput });
+              const cleanedRewrite = cleanRewriteOutput(rewritten);
+              if (cleanedRewrite && hasBurmese(cleanedRewrite)) {
+                replyText = cleanedRewrite;
+                trace("rewrite.my", replyText);
+              } else {
+                replyText = translatedBack;
+                trace("rewrite.my", "(fallback) translation used");
+              }
+            } catch (err) {
+              debug("Burmese rewrite failed", err && err.message ? err.message : err);
+              replyText = translatedBack;
+              trace("rewrite.my", "(fallback) translation used");
             }
-          } catch (err) {
-            debug("Burmese rewrite failed", err && err.message ? err.message : err);
-            replyText = translationBackOk ? translatedBack : BURMESE_UNAVAILABLE;
-            trace("rewrite.my", translationBackOk ? "(fallback) translation used" : "(fallback) unavailable");
           }
         } else {
           replyText = draft;

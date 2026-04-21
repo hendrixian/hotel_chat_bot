@@ -88,6 +88,7 @@ async function initDb() {
       title_my TEXT NOT NULL,
       description_en TEXT,
       description_my TEXT,
+      venue TEXT,
       start_date TEXT NOT NULL,
       end_date TEXT NOT NULL,
       updated_at TEXT NOT NULL
@@ -98,6 +99,7 @@ async function initDb() {
       guest_name TEXT NOT NULL,
       contact TEXT,
       room_type TEXT NOT NULL,
+      venue TEXT,
       check_in_date TEXT NOT NULL,
       check_out_date TEXT NOT NULL,
       room_count INTEGER NOT NULL,
@@ -127,8 +129,19 @@ async function initDb() {
     CREATE INDEX IF NOT EXISTS idx_reservations_dates ON reservations(check_in_date, check_out_date);
   `);
 
+  ensureColumnExists("reservations", "venue", "TEXT");
+  ensureColumnExists("events", "venue", "TEXT");
+
   saveDb();
   return db;
+}
+
+function ensureColumnExists(tableName, columnName, columnSqlType) {
+  const columns = all(`PRAGMA table_info(${tableName})`);
+  const hasColumn = columns.some((col) => col.name === columnName);
+  if (!hasColumn) {
+    run(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnSqlType}`);
+  }
 }
 
 function saveDb() {
@@ -369,7 +382,7 @@ function listEvents({ dateFrom, dateTo } = {}) {
   }
   const where = clauses.length ? `WHERE ${clauses.join(" AND ")}` : "";
   return safeAll(
-    `SELECT id, title_en, title_my, description_en, description_my, start_date, end_date, updated_at
+    `SELECT id, title_en, title_my, description_en, description_my, venue, start_date, end_date, updated_at
      FROM events
      ${where}
      ORDER BY start_date ASC, id ASC`,
@@ -377,16 +390,17 @@ function listEvents({ dateFrom, dateTo } = {}) {
   );
 }
 
-function createEvent({ titleEn, titleMy, descriptionEn, descriptionMy, startDate, endDate }) {
+function createEvent({ titleEn, titleMy, descriptionEn, descriptionMy, venue, startDate, endDate }) {
   const ts = nowIso();
   run(
-    `INSERT INTO events (title_en, title_my, description_en, description_my, start_date, end_date, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO events (title_en, title_my, description_en, description_my, venue, start_date, end_date, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       String(titleEn || "").trim(),
       String(titleMy || "").trim(),
       descriptionEn ? String(descriptionEn) : "",
       descriptionMy ? String(descriptionMy) : "",
+      venue ? String(venue).trim() : "",
       normalizeDate(startDate),
       normalizeDate(endDate),
       ts
@@ -396,16 +410,17 @@ function createEvent({ titleEn, titleMy, descriptionEn, descriptionMy, startDate
   return safeGet("SELECT * FROM events WHERE id = last_insert_rowid()");
 }
 
-function updateEvent(id, { titleEn, titleMy, descriptionEn, descriptionMy, startDate, endDate }) {
+function updateEvent(id, { titleEn, titleMy, descriptionEn, descriptionMy, venue, startDate, endDate }) {
   run(
     `UPDATE events
-     SET title_en = ?, title_my = ?, description_en = ?, description_my = ?, start_date = ?, end_date = ?, updated_at = ?
+     SET title_en = ?, title_my = ?, description_en = ?, description_my = ?, venue = ?, start_date = ?, end_date = ?, updated_at = ?
      WHERE id = ?`,
     [
       String(titleEn || "").trim(),
       String(titleMy || "").trim(),
       descriptionEn ? String(descriptionEn) : "",
       descriptionMy ? String(descriptionMy) : "",
+      venue ? String(venue).trim() : "",
       normalizeDate(startDate),
       normalizeDate(endDate),
       nowIso(),

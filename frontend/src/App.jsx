@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 
 const UI_TEXT = {
   en: {
-    welcome: "Hi! Ask me about rooms, policies, or amenities.",
+    welcome: "Hi! You can ask about rooms, policies or anything you like.",
     thinking: "Please Wait...",
     placeholder: "Ask your question...",
     error: "Sorry, I could not respond just now."
   }
 };
+
+const ROOM_TYPE_OPTIONS = ["Standard Room", "Deluxe Room"];
 
 const BURMESE_CHAR_REGEX = /[\u1000-\u109F]/;
 
@@ -15,11 +17,17 @@ function detectLanguage(value) {
   return BURMESE_CHAR_REGEX.test(value || "") ? "my" : "en";
 }
 
+function normalizeVenue(value) {
+  const raw = String(value || "").trim();
+  return raw === "[object Object]" ? "" : raw;
+}
+
 
 function KnowledgeBasePage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [token] = useState(() => localStorage.getItem("adminToken") || "");
 
   const kbLang = new URLSearchParams(window.location.search).get("lang") === "my" ? "my" : "en";
 
@@ -32,8 +40,19 @@ function KnowledgeBasePage() {
     let cancelled = false;
 
     async function loadKb() {
+      if (!token) {
+        if (!cancelled) {
+          setError("Admin login required. Please log in at /admin first.");
+          setLoading(false);
+        }
+        return;
+      }
       try {
-        const res = await fetch(`/api/kb?lang=${kbLang}`);
+        const res = await fetch(`/api/admin/kb?lang=${kbLang}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         const body = await res.json();
         if (!res.ok) {
           throw new Error(body.error || "Request failed");
@@ -56,7 +75,7 @@ function KnowledgeBasePage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [kbLang, token]);
 
   const identity = data?.hotel_identity || {};
   const contact = identity.contact || {};
@@ -68,6 +87,7 @@ function KnowledgeBasePage() {
   const eventsCalendar = Array.isArray(data?.events_calendar) ? data.events_calendar : [];
   const inventoryCalendar = Array.isArray(data?.inventory_calendar) ? data.inventory_calendar : [];
   const adminKbEntries = Array.isArray(data?.admin_kb_entries) ? data.admin_kb_entries : [];
+  const reservations = Array.isArray(data?.reservations) ? data.reservations : [];
   const transportation = data?.transportation || {};
   const airport = transportation.airport_shuttle || {};
   const parking = transportation.parking || {};
@@ -75,6 +95,9 @@ function KnowledgeBasePage() {
   const wifi = digital.wifi || {};
   const reviews = data?.reviews || {};
   const reviewCategories = reviews.categories || {};
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const upcomingEvents = eventsCalendar.filter((event) => String(event.end_date || "") >= todayIso);
+  const upcomingReservations = reservations.filter((row) => String(row.check_out_date || "") >= todayIso);
 
   function formatList(items) {
     if (!Array.isArray(items) || items.length === 0) return "N/A";
@@ -250,6 +273,62 @@ function KnowledgeBasePage() {
               <div className="kb-item-body">{formatList(reviews.sample_reviews)}</div>
             </div>
           </section>
+
+          <section className="kb-card">
+            <h2>Upcoming Events</h2>
+            <div className="kb-list">
+              {upcomingEvents.length === 0 && <div className="kb-item-body">No upcoming events.</div>}
+              {upcomingEvents.map((event) => (
+                <div key={event.id} className="kb-item">
+                  <div className="kb-item-title">{event.title || "Untitled event"}</div>
+                  <div className="kb-item-body">{event.start_date} to {event.end_date}{normalizeVenue(event.venue) ? ` | venue: ${normalizeVenue(event.venue)}` : ""}</div>
+                  <div className="kb-tags">{event.description || ""}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="kb-card">
+            <h2>Inventory Calendar</h2>
+            <div className="kb-list">
+              {inventoryCalendar.length === 0 && <div className="kb-item-body">No inventory rows.</div>}
+              {inventoryCalendar.map((row) => (
+                <div key={row.id} className="kb-item">
+                  <div className="kb-item-title">{row.room_type} | {row.date}</div>
+                  <div className="kb-item-body">Available: {row.available_rooms}/{row.total_rooms}</div>
+                  <div className="kb-tags">{row.price_usd ? `Price $${row.price_usd}` : "No price override"} {row.notes ? `| ${row.notes}` : ""}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="kb-card">
+            <h2>Reservations</h2>
+            <div className="kb-list">
+              {upcomingReservations.length === 0 && <div className="kb-item-body">No upcoming reservations.</div>}
+              {upcomingReservations.map((row) => (
+                <div key={row.id} className="kb-item">
+                  <div className="kb-item-title">{row.guest_name} | {row.room_type}</div>
+                  <div className="kb-item-body">{row.check_in_date} to {row.check_out_date} | rooms: {row.room_count}</div>
+                  <div className="kb-tags">Status: {row.status}{row.notes ? ` | ${row.notes}` : ""}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="kb-card">
+            <h2>Custom KB Entries</h2>
+            <div className="kb-list">
+              {adminKbEntries.length === 0 && <div className="kb-item-body">No custom entries yet.</div>}
+              {adminKbEntries.map((entry) => (
+                <div key={entry.id} className="kb-item">
+                  <div className="kb-item-title">{entry.key} <span className="kb-pill">{entry.category}</span></div>
+                  <div className="kb-item-body">{entry.title}</div>
+                  <div className="kb-tags">{entry.content}</div>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
       )}
     </div>
@@ -268,6 +347,7 @@ function AdminPage() {
 
   const [inventory, setInventory] = useState([]);
   const [events, setEvents] = useState([]);
+  const [eventVenueOptions, setEventVenueOptions] = useState([]);
   const [reservations, setReservations] = useState([]);
   const [kbEntries, setKbEntries] = useState([]);
 
@@ -285,6 +365,7 @@ function AdminPage() {
     titleMy: "",
     descriptionEn: "",
     descriptionMy: "",
+    venue: "",
     startDate: "",
     endDate: ""
   });
@@ -330,16 +411,21 @@ function AdminPage() {
     setLoading(true);
     setError("");
     try {
-      const [me, inv, ev, rs, kb] = await Promise.all([
+      const [me, inv, ev, rs, kb, adminKb] = await Promise.all([
         adminFetch("/api/admin/me"),
         adminFetch("/api/admin/room-inventory"),
         adminFetch("/api/admin/events"),
         adminFetch("/api/admin/reservations"),
-        adminFetch("/api/admin/kb-entries")
+        adminFetch("/api/admin/kb-entries"),
+        adminFetch("/api/admin/kb?lang=en")
       ]);
+      const eventVenues = Array.isArray(adminKb?.event_venues)
+        ? adminKb.event_venues.map((venue) => normalizeVenue(venue?.name)).filter(Boolean)
+        : [];
       setUser(me.user || null);
       setInventory(inv.rows || []);
-      setEvents(ev.rows || []);
+      setEvents((ev.rows || []).map((row) => ({ ...row, venue: normalizeVenue(row.venue) })));
+      setEventVenueOptions(eventVenues);
       setReservations(rs.rows || []);
       setKbEntries(kb.rows || []);
     } catch (err) {
@@ -460,6 +546,10 @@ function AdminPage() {
   async function submitEvent(e) {
     e.preventDefault();
     setError("");
+    if (!normalizeVenue(eventForm.venue)) {
+      setError("Please select an event venue.");
+      return;
+    }
     try {
       await adminFetch("/api/admin/events", {
         method: "POST",
@@ -471,6 +561,7 @@ function AdminPage() {
         titleMy: "",
         descriptionEn: "",
         descriptionMy: "",
+        venue: "",
         startDate: "",
         endDate: ""
       });
@@ -482,6 +573,8 @@ function AdminPage() {
   }
 
   async function editEvent(row) {
+    const venue = window.prompt("Venue", row.venue || "");
+    if (venue === null) return;
     const titleEn = window.prompt("Title (English)", row.title_en || "");
     if (titleEn === null) return;
     const titleMy = window.prompt("Title (Myanmar)", row.title_my || "");
@@ -498,7 +591,7 @@ function AdminPage() {
     try {
       await adminFetch(`/api/admin/events/${row.id}`, {
         method: "PUT",
-        body: JSON.stringify({ titleEn, titleMy, descriptionEn, descriptionMy, startDate, endDate, sourceLang: "en" })
+        body: JSON.stringify({ titleEn, titleMy, descriptionEn, descriptionMy, venue, startDate, endDate, sourceLang: "en" })
       });
       setNotice("Event updated.");
       setRefreshTick((v) => v + 1);
@@ -664,6 +757,7 @@ function AdminPage() {
         {user && (
           <div className="admin-session">
             <span>Signed in as {user.username}</span>
+            <a href="/admin/kb">Open Admin KB</a>
             <button onClick={handleLogout}>Logout</button>
           </div>
         )}
@@ -686,7 +780,12 @@ function AdminPage() {
           <section className="admin-card">
             <h2>Room Inventory</h2>
             <form className="admin-form compact" onSubmit={submitInventory}>
-              <input value={invForm.roomType} onChange={(e) => setInvForm({ ...invForm, roomType: e.target.value })} placeholder="Room type" required />
+              <select value={invForm.roomType} onChange={(e) => setInvForm({ ...invForm, roomType: e.target.value })} required>
+                <option value="">Room type</option>
+                {ROOM_TYPE_OPTIONS.map((roomType) => (
+                  <option key={roomType} value={roomType}>{roomType}</option>
+                ))}
+              </select>
               <input type="date" value={invForm.date} onChange={(e) => setInvForm({ ...invForm, date: e.target.value })} required />
               <input type="number" value={invForm.totalRooms} onChange={(e) => setInvForm({ ...invForm, totalRooms: e.target.value })} placeholder="Total rooms" required />
               <input type="number" value={invForm.availableRooms} onChange={(e) => setInvForm({ ...invForm, availableRooms: e.target.value })} placeholder="Available rooms" required />
@@ -711,12 +810,12 @@ function AdminPage() {
           <section className="kb-card">
             <h2>Events Calendar</h2>
             <div className="kb-list">
-              {eventsCalendar.length === 0 && <div className="kb-item-body">No events yet.</div>}
-              {eventsCalendar.map((event) => (
+              {events.length === 0 && <div className="kb-item-body">No events yet.</div>}
+              {events.map((event) => (
                 <div key={event.id} className="kb-item">
-                  <div className="kb-item-title">{event.title}</div>
-                  <div className="kb-item-body">{event.start_date} to {event.end_date}</div>
-                  <div className="kb-tags">{event.description}</div>
+                  <div className="kb-item-title">{event.title_en || event.title_my || "Untitled event"}</div>
+                  <div className="kb-item-body">{event.start_date} to {event.end_date}{normalizeVenue(event.venue) ? ` | venue: ${normalizeVenue(event.venue)}` : ""}</div>
+                  <div className="kb-tags">{event.description_en || event.description_my || ""}</div>
                 </div>
               ))}
             </div>
@@ -725,8 +824,8 @@ function AdminPage() {
           <section className="kb-card">
             <h2>Inventory Calendar</h2>
             <div className="kb-list">
-              {inventoryCalendar.length === 0 && <div className="kb-item-body">No inventory rows yet.</div>}
-              {inventoryCalendar.map((row) => (
+              {inventory.length === 0 && <div className="kb-item-body">No inventory rows yet.</div>}
+              {inventory.map((row) => (
                 <div key={row.id} className="kb-item">
                   <div className="kb-item-title">{row.room_type} | {row.date}</div>
                   <div className="kb-item-body">Available: {row.available_rooms}/{row.total_rooms}</div>
@@ -739,12 +838,12 @@ function AdminPage() {
           <section className="kb-card">
             <h2>Custom KB Entries</h2>
             <div className="kb-list">
-              {adminKbEntries.length === 0 && <div className="kb-item-body">No custom entries yet.</div>}
-              {adminKbEntries.map((entry) => (
+              {kbEntries.length === 0 && <div className="kb-item-body">No custom entries yet.</div>}
+              {kbEntries.map((entry) => (
                 <div key={entry.id} className="kb-item">
-                  <div className="kb-item-title">{entry.key} <span className="kb-pill">{entry.category}</span></div>
-                  <div className="kb-item-body">{entry.title}</div>
-                  <div className="kb-tags">{entry.content}</div>
+                  <div className="kb-item-title">{entry.kb_key} <span className="kb-pill">{entry.category}</span></div>
+                  <div className="kb-item-body">{entry.title_en || entry.title_my || "Untitled"}</div>
+                  <div className="kb-tags">{entry.content_en || entry.content_my || ""}</div>
                 </div>
               ))}
             </div>
@@ -761,6 +860,12 @@ function AdminPage() {
               <input value={eventForm.titleMy} onChange={(e) => setEventForm({ ...eventForm, titleMy: e.target.value })} placeholder="Title (Myanmar)" />
               <input value={eventForm.descriptionEn} onChange={(e) => setEventForm({ ...eventForm, descriptionEn: e.target.value })} placeholder="Description (English)" />
               <input value={eventForm.descriptionMy} onChange={(e) => setEventForm({ ...eventForm, descriptionMy: e.target.value })} placeholder="Description (Myanmar)" />
+              <select value={eventForm.venue} onChange={(e) => setEventForm({ ...eventForm, venue: e.target.value })} required>
+                <option value="" disabled>Select event venue</option>
+                {eventVenueOptions.map((venueName) => (
+                  <option key={venueName} value={venueName}>{venueName}</option>
+                ))}
+              </select>
               <input type="date" value={eventForm.startDate} onChange={(e) => setEventForm({ ...eventForm, startDate: e.target.value })} required />
               <input type="date" value={eventForm.endDate} onChange={(e) => setEventForm({ ...eventForm, endDate: e.target.value })} required />
               <button type="submit">Save Event</button>
@@ -768,7 +873,7 @@ function AdminPage() {
             <div className="admin-list">
               {events.map((row) => (
                 <div key={row.id} className="admin-item">
-                  <div><strong>{row.title_en}</strong> | {row.start_date} to {row.end_date}</div>
+                  <div><strong>{row.title_en}</strong> | {row.start_date} to {row.end_date}{normalizeVenue(row.venue) ? ` | venue: ${normalizeVenue(row.venue)}` : ""}</div>
                   <div className="admin-item-sub">{row.title_my}</div>
                   <div className="admin-item-actions">
                     <button onClick={() => editEvent(row)}>Edit</button>
@@ -784,7 +889,12 @@ function AdminPage() {
             <form className="admin-form compact" onSubmit={submitReservation}>
               <input value={reservationForm.guestName} onChange={(e) => setReservationForm({ ...reservationForm, guestName: e.target.value })} placeholder="Guest name" required />
               <input value={reservationForm.contact} onChange={(e) => setReservationForm({ ...reservationForm, contact: e.target.value })} placeholder="Contact" />
-              <input value={reservationForm.roomType} onChange={(e) => setReservationForm({ ...reservationForm, roomType: e.target.value })} placeholder="Room type" required />
+              <select value={reservationForm.roomType} onChange={(e) => setReservationForm({ ...reservationForm, roomType: e.target.value })} required>
+                <option value="">Room type</option>
+                {ROOM_TYPE_OPTIONS.map((roomType) => (
+                  <option key={roomType} value={roomType}>{roomType}</option>
+                ))}
+              </select>
               <input type="date" value={reservationForm.checkInDate} onChange={(e) => setReservationForm({ ...reservationForm, checkInDate: e.target.value })} required />
               <input type="date" value={reservationForm.checkOutDate} onChange={(e) => setReservationForm({ ...reservationForm, checkOutDate: e.target.value })} required />
               <input type="number" value={reservationForm.roomCount} onChange={(e) => setReservationForm({ ...reservationForm, roomCount: e.target.value })} placeholder="Rooms" required />
@@ -848,7 +958,7 @@ function AdminPage() {
 }
 
 function App() {
-  const isKbPage = window.location.pathname === "/kb";
+  const isKbPage = window.location.pathname === "/admin/kb";
   if (isKbPage) {
     return <KnowledgeBasePage />;
   }
@@ -1051,5 +1161,3 @@ function App() {
 }
 
 export default App;
-
-

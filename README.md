@@ -7,6 +7,7 @@ This project uses a Node/Express backend, a React frontend, and a Python FAISS s
 - Frontend auto-detects Burmese vs English from user input.
 - Backend also auto-detects language if none is provided.
 - Retrieval uses the FAISS service when available; otherwise it falls back to SQLite keyword search.
+- KB dashboard is admin-only at `/admin/kb`.
 
 ## Prerequisites
 
@@ -101,6 +102,7 @@ Open the frontend dev server in your browser and start chatting.
 
 - Open `/admin` in the frontend (for example `http://localhost:5173/admin`)
 - Login with `ADMIN_USERNAME` / `ADMIN_PASSWORD` from `.env`
+- Open admin KB view at `/admin/kb` (for example `http://localhost:5173/admin/kb`)
 - Admin can manage:
   - Room inventory by date (`total_rooms`, `available_rooms`, optional price)
   - Events calendar by date range

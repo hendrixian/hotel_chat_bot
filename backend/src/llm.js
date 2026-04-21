@@ -47,6 +47,9 @@ function isNetworkFetchError(err) {
   if (!err) return false;
   if (err.name === "AbortError") return true;
   if (err.message === "fetch failed") return true;
+  if (String(err.message || "").toLowerCase().includes("aborted")) return true;
+  if (String(err.message || "").toLowerCase().includes("timeout")) return true;
+  if (String(err.code || "") === "20") return true;
   const code = String(err.code || err.cause?.code || "").toUpperCase();
   return Boolean(code && /(ECONNREFUSED|ENOTFOUND|EAI_AGAIN|ETIMEDOUT|ECONNRESET|EHOSTUNREACH)/.test(code));
 }
@@ -168,37 +171,56 @@ async function postJson(url, body, headers) {
   const maxRetries = Number.isFinite(retriesEnv) ? Math.max(0, retriesEnv) : 2;
   const baseDelayMsEnv = Number(process.env.COLAB_RETRY_DELAY_MS);
   const baseDelayMs = Number.isFinite(baseDelayMsEnv) ? Math.max(100, baseDelayMsEnv) : 350;
+  const timeoutMsEnv = Number(process.env.COLAB_TIMEOUT_MS);
+  const timeoutMs = Number.isFinite(timeoutMsEnv) && timeoutMsEnv > 0 ? timeoutMsEnv : undefined;
+  const maxAttempts = maxRetries + 1;
 
   let lastErr = null;
   for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
+    const attemptNo = attempt + 1;
     let res;
     try {
       res = await fetch(url, {
         method: "POST",
         headers,
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
+        timeoutMs
       });
     } catch (err) {
       lastErr = err;
       if (attempt < maxRetries && isNetworkFetchError(err)) {
-        const delay = baseDelayMs * (attempt + 1);
-        debug("POST retry (network)", { url, attempt: attempt + 1, delay_ms: delay, error: formatErrorDetails(err) });
+        const delay = baseDelayMs * attemptNo;
+        debug("POST retry (network)", {
+          url,
+          attempt: attemptNo,
+          max_attempts: maxAttempts,
+          delay_ms: delay,
+          timeout_ms: timeoutMs,
+          error: formatErrorDetails(err)
+        });
         await sleep(delay);
         continue;
       }
-      throw new Error(`Network error calling ${url}: ${formatErrorDetails(err)}`);
+      throw new Error(`Network error calling ${url} (attempt ${attemptNo}/${maxAttempts}): ${formatErrorDetails(err)}`);
     }
 
     if (!res.ok) {
       const text = await res.text();
       debug("HTTP", res.status, text.slice(0, 500));
       if (attempt < maxRetries && isRetryableHttp(res.status, text)) {
-        const delay = baseDelayMs * (attempt + 1);
-        debug("POST retry (http)", { url, status: res.status, attempt: attempt + 1, delay_ms: delay });
+        const delay = baseDelayMs * attemptNo;
+        debug("POST retry (http)", {
+          url,
+          status: res.status,
+          attempt: attemptNo,
+          max_attempts: maxAttempts,
+          delay_ms: delay,
+          timeout_ms: timeoutMs
+        });
         await sleep(delay);
         continue;
       }
-      throw new Error(`Request failed: ${res.status} ${text}`);
+      throw new Error(`Request failed (attempt ${attemptNo}/${maxAttempts}): ${res.status} ${text}`);
     }
 
     return res.json();
